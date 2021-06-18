@@ -1,11 +1,17 @@
-﻿using ChatTogether.Commons.EmailSender;
+﻿using ChatTogether.Commons.ConfigurationModels;
+using ChatTogether.Commons.EmailSender;
 using ChatTogether.Commons.RandomStringGenerator;
 using ChatTogether.Dal;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace ChatTogether.IoC
 {
@@ -21,7 +27,19 @@ namespace ChatTogether.IoC
 
         public static void RegisterAuthentication(this IServiceCollection services)
         {
-            // TODO: zarejestrowac uwierzytelnianie
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(55);
+                    options.Cookie.SameSite = SameSiteMode.None;
+                    options.Events.OnRedirectToLogin = ctxt =>
+                    {
+                        ctxt.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        return Task.CompletedTask;
+                    };
+                });
+
+            services.AddHttpContextAccessor();
         }
 
         public static void RegisterSwagger(this IServiceCollection services)
@@ -61,8 +79,9 @@ namespace ChatTogether.IoC
 
         public static void RegisterConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<RandomStringGeneratorConfiguration>(configuration.GetSection("RandomStringGeneratorConfiguration"));
-            services.Configure<EmailConfiguration>(configuration.GetSection("EmailConfiguration"));
+            services.Configure<FrontendConfiguration>(configuration.GetSection("Frontend"));
+            services.Configure<RandomStringGeneratorConfiguration>(configuration.GetSection("RandomStringGenerator"));
+            services.Configure<EmailConfiguration>(configuration.GetSection("Email"));
         }
     }
 }

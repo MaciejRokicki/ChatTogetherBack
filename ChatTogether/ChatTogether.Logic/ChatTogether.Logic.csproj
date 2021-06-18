@@ -5,7 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ChatTogether.Dal\ChatTogether.Dal.csproj" />
+    <ProjectReference Include="..\ChatTogether.Ports\ChatTogether.Ports.csproj" />
   </ItemGroup>
 
 </Project>

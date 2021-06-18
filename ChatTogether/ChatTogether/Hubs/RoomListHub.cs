@@ -7,12 +7,12 @@ namespace ChatTogether.Hubs
 {
     public class RoomListHub : Hub
     {
-        private readonly IExampleService exampleService;
+        //private readonly IExampleService exampleService;
 
-        public RoomListHub(IExampleService exampleService)
-        {
-            this.exampleService = exampleService;
-        }
+        //public RoomListHub(IExampleService exampleService)
+        //{
+        //    this.exampleService = exampleService;
+        //}
 
         public override Task OnConnectedAsync()
         {

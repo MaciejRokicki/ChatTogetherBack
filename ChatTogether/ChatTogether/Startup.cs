@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SimpleInjector;
+using System.Security.Claims;
 
 namespace ChatTogether
 {
@@ -29,6 +30,7 @@ namespace ChatTogether
         public void ConfigureServices(IServiceCollection services)
         {
             services.RegisterMvcAndCors();
+            services.RegisterAuthentication();
             services.RegisterSignalR();
             services.RegisterAutomapper();
             services.RegisterDbContexts(configuration);
@@ -56,6 +58,8 @@ namespace ChatTogether
             });
 
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

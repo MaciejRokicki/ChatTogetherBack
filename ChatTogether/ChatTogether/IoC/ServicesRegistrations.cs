@@ -1,10 +1,10 @@
 ﻿using ChatTogether.Commons.EmailSender;
 using ChatTogether.Commons.RandomStringGenerator;
-using ChatTogether.Dal.Interfaces;
-using ChatTogether.Dal.Repositories;
-using ChatTogether.FluentValidator;
-using ChatTogether.Logic.Interfaces;
-using ChatTogether.Logic.Services;
+using ChatTogether.Dal.Interfaces.Security;
+using ChatTogether.Dal.Repositories.Security;
+using ChatTogether.FluentValidator.Validators.Security;
+using ChatTogether.Logic.Interfaces.Security;
+using ChatTogether.Logic.Services.Security;
 using SimpleInjector;
 
 namespace ChatTogether.IoC
@@ -13,12 +13,19 @@ namespace ChatTogether.IoC
     {
         public static void RegisterRepositories(this Container container)
         {
-            container.Register<IExampleRepository, ExampleRepository>();
+            container.Register<IAccountRepository, AccountRepository>();
+            container.Register<IConfirmEmailTokenRepository, ConfirmEmailTokenRepository>();
+            container.Register<IChangeEmailTokenRepository, ChangeEmailTokenRepository>();
+            container.Register<IChangePasswordTokenRepository, ChangePasswordTokenRepository>();
         }
 
         public static void RegisterServices(this Container container)
         {
-            container.Register<IExampleService, ExampleService>();
+            container.Register<IEncryptionService, EncryptionService>();
+            container.Register<ISecurityService, SecurityService>();
+            container.Register<IConfirmEmailService, ConfirmEmailService>();
+            container.Register<IChangeEmailService, ChangeEmailService>();
+            container.Register<IChangePasswordService, ChangePasswordService>();
         }
 
         public static void RegisterCommons(this Container container)
@@ -29,7 +36,8 @@ namespace ChatTogether.IoC
 
         public static void RegisterValidators(this Container container)
         {
-            container.Register<ExampleValidator>();
+            container.Register<RegistraionModelValidator>();
+            container.Register<LoginModelValidator>();
         }
     }
 }

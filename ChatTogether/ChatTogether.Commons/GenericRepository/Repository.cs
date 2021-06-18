@@ -1,8 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ChatTogether.Commons.Pagination;
+using ChatTogether.Commons.Pagination.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
+using System.Text;
 using System.Threading.Tasks;
 
 
@@ -17,7 +20,7 @@ namespace ChatTogether.Commons.GenericRepository
             this.ctxt = ctxt;
         }
 
-        public async Task<T> CreateAsync(T entity)
+        public virtual async Task<T> CreateAsync(T entity)
         {
             await ctxt
                 .Set<T>()
@@ -28,7 +31,7 @@ namespace ChatTogether.Commons.GenericRepository
             return entity;
         }
 
-        public async Task DeleteAsync(Expression<Func<T, bool>> exp)
+        public virtual async Task DeleteAsync(Expression<Func<T, bool>> exp)
         {
             T entity = await GetAsync(exp);
 
@@ -39,7 +42,7 @@ namespace ChatTogether.Commons.GenericRepository
             await ctxt.SaveChangesAsync();
         }
 
-        public async Task<T> GetAsync(Expression<Func<T, bool>> exp)
+        public virtual async Task<T> GetAsync(Expression<Func<T, bool>> exp)
         {
             T entity = await ctxt
                 .Set<T>()
@@ -49,28 +52,67 @@ namespace ChatTogether.Commons.GenericRepository
             return entity;
         }
 
-        public async Task<IEnumerable<T>> GetManyAsync()
+        public virtual async Task<PaginationPage<T>> GetManyAsync()
         {
-            //TODO: IEnumerable -> klasa z paginacji
-            IEnumerable<T> entites = await ctxt
+            PaginationPage<T> page = await ctxt
                 .Set<T>()
-                .ToListAsync();
+                .GetPaginationPageAsync();
 
-            return entites;
+            return page;
         }
 
-        public async Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> exp)
+        //TODO: sprawdzic pozniej na danych (np. jak beda wiadomosci w bazie)
+        public virtual async Task<PaginationPage<T>> GetManyAsync(int page, int pageSize, Filter[] filters = null, Sorting[] sortings = null)
         {
-            //TODO: IEnumerable -> klasa z paginacji
-            IEnumerable<T> entites = await ctxt
-                .Set<T>()
-                .Where(exp)
-                .ToListAsync();
+            IQueryable<T> query = ctxt
+                .Set<T>();
 
-            return entites;
+            if(filters.Length != 0)
+            {
+                foreach(Filter filter in filters)
+                {
+                    query.Where(string.Format("x => x.{0} {1} {2}", filter.FieldName, FilterOperations.operations[(int)filter.Operation], filter.Value));
+                }
+            }
+
+            //https://dynamic-linq.net/basic-simple-query#ordering-results
+            if (sortings.Length != 0)
+            {
+                StringBuilder sortingQuery = new StringBuilder(string.Empty);
+
+                foreach(Sorting sorting in sortings)
+                {
+                    sortingQuery.Append(sorting.FieldName);
+                    sortingQuery.Append(", ");
+                    
+                    if(!sorting.Ascending)
+                    {
+                        sortingQuery.Append("desc");
+                    }
+                }
+
+                sortingQuery.Remove(sortingQuery.Length - 2, 2);
+
+                query.OrderBy(sortingQuery.ToString());
+            }
+
+            PaginationPage<T> paginationPage = await query.GetPaginationPageAsync(page, pageSize);
+
+            return paginationPage;
         }
 
-        public async Task<T> UpdateAsync(Expression<Func<T, bool>> exp, T entity)
+        public virtual async Task<T> UpdateAsync(T entity)
+        {
+            ctxt
+                .Set<T>()
+                .Update(entity);
+
+            await ctxt.SaveChangesAsync();
+
+            return entity;
+        }
+
+        public virtual async Task<T> UpdateAsync(Expression<Func<T, bool>> exp, T entity)
         {
             T currentEntity = await GetAsync(exp);
 

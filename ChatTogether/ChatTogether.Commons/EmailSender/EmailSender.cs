@@ -16,7 +16,7 @@ namespace ChatTogether.Commons.EmailSender
             this.emailConfiguration = emailConfiguration.Value;
         }
 
-        public async Task Send(string recipientEmail, string subject, MessageTemplate messageTemplate)
+        public async Task Send(string recipientEmail, MessageTemplate messageTemplate)
         {
             using (SmtpClient smtpClient = new SmtpClient(emailConfiguration.Host, emailConfiguration.Port))
             {
@@ -25,7 +25,7 @@ namespace ChatTogether.Commons.EmailSender
                 smtpClient.EnableSsl = true;
                 smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
 
-                using (MailMessage message = new MailMessage(emailConfiguration.Username, recipientEmail, subject, messageTemplate.HtmlTemplate))
+                using (MailMessage message = new MailMessage(emailConfiguration.Username, recipientEmail, messageTemplate.Subject, messageTemplate.HtmlTemplate))
                 {
                     message.IsBodyHtml = true;
                     await smtpClient.SendMailAsync(message);
@@ -33,11 +33,11 @@ namespace ChatTogether.Commons.EmailSender
             }
         }
 
-        public async Task SendMany(IEnumerable<string> recipientEmails, string subject, MessageTemplate messageTemplate)
+        public async Task SendMany(IEnumerable<string> recipientEmails, MessageTemplate messageTemplate)
         {
             foreach (string email in recipientEmails)
             {
-                await Send(email, subject, messageTemplate);
+                await Send(email, messageTemplate);
             }
         }
     }

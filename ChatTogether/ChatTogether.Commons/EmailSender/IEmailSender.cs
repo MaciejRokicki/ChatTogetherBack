@@ -6,7 +6,7 @@ namespace ChatTogether.Commons.EmailSender
 {
     public interface IEmailSender
     {
-        Task Send(string recipientEmail, string subject, MessageTemplate messageTemplate);
-        Task SendMany(IEnumerable<string> recipientEmails, string subject, MessageTemplate messageTemplate);
+        Task Send(string recipientEmail, MessageTemplate messageTemplate);
+        Task SendMany(IEnumerable<string> recipientEmails, MessageTemplate messageTemplate);
     }
 }
