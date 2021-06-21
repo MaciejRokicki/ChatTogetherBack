@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ChatTogether.Commons.Exceptions;
 using ChatTogether.FluentValidator.Validators.Security;
 using ChatTogether.Logic.Interfaces.Security;
 using ChatTogether.Ports.Dtos.Security;
@@ -8,10 +9,11 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
-//TODO: obsługa błędów -> try/catch na kontrolerze, customowe exceptiony w serwisach
-//TODO: wystawic endpoint do wylogowywania
+
 namespace ChatTogether.Controllers.Security
 {
     [ApiController]
@@ -26,9 +28,9 @@ namespace ChatTogether.Controllers.Security
 
         public SecurityController(
             IHttpContextAccessor httpContextAccessor,
-            IMapper mapper, 
-            ISecurityService securityService, 
-            LoginModelValidator loginModelValidator, 
+            IMapper mapper,
+            ISecurityService securityService,
+            LoginModelValidator loginModelValidator,
             RegistraionModelValidator registrationModelValidator
             )
         {
@@ -42,130 +44,300 @@ namespace ChatTogether.Controllers.Security
         [HttpPut("[action]")]
         public async Task<IActionResult> ChangeEmail(string token, string newEmail)
         {
-            ValidationResult validationResult = await loginModelValidator.ValidateAsync(new LoginModel() { Email = newEmail,  Password = "strinG1!" });
-
-            if (!validationResult.IsValid)
+            try
             {
-                return BadRequest(validationResult.Errors);
+                ValidationResult validationResult = await loginModelValidator.ValidateAsync(new LoginModel() { Email = newEmail, Password = "strinG1!" });
+
+                if (!validationResult.IsValid)
+                {
+                    throw new InvalidDataException();
+                }
+
+                await securityService.ChangeEmail(token, newEmail);
+                return Ok();
             }
-
-            await securityService.ChangeEmail(token, newEmail);
-
-            return Ok();
+            catch(IncorrectDataException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch(EmailExistsException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch(InvalidDataException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("[action]")]
         public async Task<IActionResult> ChangePassword(string token, string newPassword)
         {
-            ValidationResult validationResult = await loginModelValidator.ValidateAsync(new LoginModel() { Email = "example@example.com", Password = newPassword });
-
-            if (!validationResult.IsValid)
+            try
             {
-                return BadRequest(validationResult.Errors);
+                ValidationResult validationResult = await loginModelValidator.ValidateAsync(new LoginModel() { Email = "example@example.com", Password = newPassword });
+
+                if (!validationResult.IsValid)
+                {
+                    throw new InvalidDataException();
+                }
+
+                await securityService.ChangePassword(token, newPassword);
+
+                return Ok();
             }
-
-            await securityService.ChangePassword(token, newPassword);
-
-            return Ok();
+            catch (IncorrectDataException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidDataException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("[action]")]
         public async Task<IActionResult> ForgotPassword(string email)
         {
-            ValidationResult validationResult = await loginModelValidator.ValidateAsync(new LoginModel() { Email = email, Password = "strinG1!" });
-
-            if (!validationResult.IsValid)
+            try
             {
-                return BadRequest(validationResult.Errors);
+                ValidationResult validationResult = await loginModelValidator.ValidateAsync(new LoginModel() { Email = email, Password = "strinG1!" });
+
+                if (!validationResult.IsValid)
+                {
+                    throw new InvalidDataException();
+                }
+
+                await securityService.SendRequestToChangePassword(email);
+
+                return Ok();
             }
-
-            await securityService.SendRequestToChangePassword(email);
-
-            return Ok();
+            catch (IncorrectDataException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidDataException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("[action]")]
         public async Task<IActionResult> ConfirmEmail(string email, string token)
         {
-            ValidationResult validationResult = await loginModelValidator.ValidateAsync(new LoginModel() { Email = email, Password = "strinG1!" });
-
-            if (!validationResult.IsValid)
+            try
             {
-                return BadRequest(validationResult.Errors);
+                ValidationResult validationResult = await loginModelValidator.ValidateAsync(new LoginModel() { Email = email, Password = "strinG1!" });
+
+                if (!validationResult.IsValid)
+                {
+                    throw new InvalidDataException();
+                }
+
+                await securityService.ConfirmEmail(email, token);
+
+                return Ok();
             }
-
-            await securityService.ConfirmEmail(email, token);
-
-            return Ok();
+            catch (IncorrectDataException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidDataException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("[action]")]
         public async Task<IActionResult> ResendConfirmationEmail(string email)
         {
-            ValidationResult validationResult = await loginModelValidator.ValidateAsync(new LoginModel() { Email = email, Password = "strinG1!" });
-
-            if (!validationResult.IsValid)
+            try
             {
-                return BadRequest(validationResult.Errors);
+                ValidationResult validationResult = await loginModelValidator.ValidateAsync(new LoginModel() { Email = email, Password = "strinG1!" });
+
+                if (!validationResult.IsValid)
+                {
+                    throw new InvalidDataException();
+                }
+
+                await securityService.ResendConfirmationEmail(email);
+
+                return Ok();
             }
-
-            await securityService.ResendConfirmationEmail(email);
-
-            return Ok();
+            catch (IncorrectDataException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidDataException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("[action]")]
         [Authorize]
         public async Task<IActionResult> SendRequestToChangeEmail()
         {
-            string email = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
-            await securityService.SendRequestToChangeEmail(email);
+            try
+            {
+                string email = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
+                await securityService.SendRequestToChangeEmail(email);
 
-            return Ok();
+                return Ok();
+            }
+            catch (IncorrectDataException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("[action]")]
         [Authorize]
         public async Task<IActionResult> SendRequestToChangePassword()
         {
-            string email = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
-            await securityService.SendRequestToChangePassword(email);
+            try
+            {
+                string email = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
+                await securityService.SendRequestToChangePassword(email);
 
-            return Ok();
+                return Ok();
+            }
+            catch (IncorrectDataException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("[action]")]
         public async Task<IActionResult> SignIn([FromBody] LoginModel loginModel)
         {
-            ValidationResult validationResult = await loginModelValidator.ValidateAsync(loginModel);
-
-            if (!validationResult.IsValid)
+            try
             {
-                return BadRequest(validationResult.Errors);
+                ValidationResult validationResult = await loginModelValidator.ValidateAsync(loginModel);
+
+                if (!validationResult.IsValid)
+                {
+                    throw new InvalidDataException();
+                }
+
+                AccountDto accountDto = mapper.Map<AccountDto>(loginModel);
+                ClaimsPrincipal claimsPrincipal = await securityService.SignIn(accountDto);
+
+                await httpContextAccessor.HttpContext.SignInAsync(claimsPrincipal);
+
+                return Ok();
             }
-
-            AccountDto accountDto = mapper.Map<AccountDto>(loginModel);
-            ClaimsPrincipal claimsPrincipal = await securityService.SignIn(accountDto);
-
-            await httpContextAccessor.HttpContext.SignInAsync(claimsPrincipal);
-
-            return Ok();
+            catch (IncorrectDataException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (AccountUnconfirmedException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidDataException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("[action]")]
         public async Task<IActionResult> SignUp([FromBody] RegistrationModel registrationModel)
         {
-            ValidationResult validationResult = await registrationModelValidator.ValidateAsync(registrationModel);
-
-            if (!validationResult.IsValid)
+            try
             {
-                return BadRequest(validationResult.Errors);
+                ValidationResult validationResult = await registrationModelValidator.ValidateAsync(registrationModel);
+
+                if (!validationResult.IsValid)
+                {
+                    throw new InvalidDataException();
+                }
+
+                AccountDto accountDto = mapper.Map<AccountDto>(registrationModel);
+                await securityService.SignUp(accountDto, registrationModel.Nickname);
+
+                return Ok();
             }
+            catch (EmailExistsException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidDataException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-            AccountDto accountDto = mapper.Map<AccountDto>(registrationModel);
-            await securityService.SignUp(accountDto, registrationModel.Nickname);
+        [HttpGet("[action]")]
+        [Authorize]
+        public async Task<IActionResult> SignOut()
+        {
+            try
+            {
+                await httpContextAccessor.HttpContext.SignOutAsync();
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //TODO: pomyslec nad refreshem (moze refresh token)
+        [HttpGet("[action]")]
+        [Authorize]
+        public async Task<IActionResult> Refresh()
+        {
+            try
+            {
+                IIdentity identity = httpContextAccessor.HttpContext.User.Identity;
+                ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
+
+                await httpContextAccessor.HttpContext.SignInAsync(claimsPrincipal);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

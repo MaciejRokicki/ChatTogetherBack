@@ -1,6 +1,7 @@
 ﻿using ChatTogether.Commons.ConfigurationModels;
 using ChatTogether.Commons.EmailSender;
 using ChatTogether.Commons.EmailSender.Models.Templates;
+using ChatTogether.Commons.Exceptions;
 using ChatTogether.Dal.Dbos.Security;
 using ChatTogether.Dal.Interfaces.Security;
 using ChatTogether.Logic.Interfaces.Security;
@@ -48,14 +49,21 @@ namespace ChatTogether.Logic.Services.Security
 
             if (changeEmailTokenDbo == null)
             {
-                return;
+                throw new IncorrectDataException();
+            }
+
+            AccountDbo newEmailExist = await accountRepository.GetAsync(x => x.Email == newEmail);
+
+            if(newEmailExist != null)
+            {
+                throw new EmailExistsException();
             }
 
             AccountDbo accountDbo = changeEmailTokenDbo.Account;
 
-            bool result = await changeEmailService.CheckToken(accountDbo.Id, token);
+            bool isValid = await changeEmailService.CheckToken(accountDbo.Id, token);
 
-            if (result)
+            if (isValid)
             {
                 accountDbo.Email = newEmail;
                 accountDbo.IsConfirmed = false;
@@ -72,14 +80,14 @@ namespace ChatTogether.Logic.Services.Security
 
             if (changePasswordTokenDbo == null)
             {
-                return;
+                throw new IncorrectDataException();
             }
 
             AccountDbo accountDbo = changePasswordTokenDbo.Account;
 
-            bool result = await changePasswordService.CheckToken(accountDbo.Id, token);
+            bool isValid = await changePasswordService.CheckToken(accountDbo.Id, token);
 
-            if (result)
+            if (isValid)
             {
                 accountDbo.Password = encryptionService.EncryptionSHA256(accountDbo.Password);
                 accountDbo = await accountRepository.UpdateAsync(accountDbo);
@@ -94,12 +102,12 @@ namespace ChatTogether.Logic.Services.Security
 
             if (accountDbo == null)
             {
-                return;
+                throw new IncorrectDataException();
             }
 
-            bool result = await confirmEmailService.CheckToken(accountDbo.Id, token);
+            bool isValid = await confirmEmailService.CheckToken(accountDbo.Id, token);
 
-            if(result)
+            if(isValid)
             {
                 accountDbo.IsConfirmed = true;
                 await accountRepository.UpdateAsync(accountDbo);
@@ -112,9 +120,9 @@ namespace ChatTogether.Logic.Services.Security
         {
             AccountDbo accountDbo = await accountRepository.GetAsync(x => x.Email == email);
 
-            if(accountDbo == null)
+            if (accountDbo == null)
             {
-                return;
+                throw new IncorrectDataException();
             }
 
             await confirmEmailService.DeleteToken(accountDbo.Id);
@@ -127,7 +135,7 @@ namespace ChatTogether.Logic.Services.Security
 
             if (accountDbo == null)
             {
-                return;
+                throw new IncorrectDataException();
             }
 
             ConfirmEmailTokenDbo confirmEmailTokenDbo = await confirmEmailService.CreateToken(accountDbo.Id);
@@ -142,7 +150,7 @@ namespace ChatTogether.Logic.Services.Security
 
             if (accountDbo == null)
             {
-                return;
+                throw new IncorrectDataException();
             }
 
             ChangeEmailTokenDbo changeEmailTokenDbo = await changeEmailService.CreateToken(accountDbo.Id);
@@ -157,7 +165,7 @@ namespace ChatTogether.Logic.Services.Security
 
             if (accountDbo == null)
             {
-                return;
+                throw new IncorrectDataException();
             }
 
             ChangePasswordTokenDbo changePasswordTokenDbo = await changePasswordService.CreateToken(accountDbo.Id);
@@ -170,21 +178,21 @@ namespace ChatTogether.Logic.Services.Security
         {
             AccountDbo accountDbo = await accountRepository.GetAsync(x => x.Email == accountDto.Email);
 
-            if(accountDbo == null)
+            if (accountDbo == null)
             {
-                return null;
+                throw new IncorrectDataException();
             }
 
-            if(!accountDbo.IsConfirmed)
+            if (!accountDbo.IsConfirmed)
             {
-                return null;
+                throw new AccountUnconfirmedException();
             }
 
             bool isCorrect = encryptionService.VerifySHA256(accountDto.Password, accountDbo.Password);
 
             if(!isCorrect)
             {
-                return null;
+                throw new IncorrectDataException();
             }
 
             List<Claim> claims = GetClaims(accountDto.Email);
@@ -198,9 +206,9 @@ namespace ChatTogether.Logic.Services.Security
         {
             AccountDbo accountDbo = await accountRepository.GetAsync(x => x.Email == accountDto.Email);
 
-            if(accountDbo != null)
+            if (accountDbo != null)
             {
-                return;
+                throw new EmailExistsException();
             }
 
             accountDbo = new AccountDbo()
