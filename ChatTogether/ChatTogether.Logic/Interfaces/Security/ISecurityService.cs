@@ -12,10 +12,10 @@ namespace ChatTogether.Logic.Interfaces.Security
         Task ResendConfirmationEmail(string email);
         Task ConfirmEmail(string email, string token);
 
-        Task SendRequestToChangeEmail(string email);
+        Task ChangeEmailRequest(string email);
         Task ChangeEmail(string token, string newEmail);
 
-        Task SendRequestToChangePassword(string email);
+        Task ChangePasswordRequest(string email);
         Task ChangePassword(string token, string newPassword);
     }
 }

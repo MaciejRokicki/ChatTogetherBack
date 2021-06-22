@@ -29,7 +29,7 @@ namespace ChatTogether.Dal.Migrations
                     b.Property<DateTime>("CreationDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2021, 6, 17, 11, 16, 30, 603, DateTimeKind.Local).AddTicks(169));
+                        .HasDefaultValue(new DateTime(2021, 6, 22, 11, 11, 49, 646, DateTimeKind.Local).AddTicks(3532));
 
                     b.Property<string>("Email")
                         .IsRequired()

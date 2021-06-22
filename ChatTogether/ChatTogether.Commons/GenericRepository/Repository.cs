@@ -56,6 +56,7 @@ namespace ChatTogether.Commons.GenericRepository
         {
             PaginationPage<T> page = await ctxt
                 .Set<T>()
+                .AsNoTracking()
                 .GetPaginationPageAsync();
 
             return page;

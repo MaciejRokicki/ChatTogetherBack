@@ -23,9 +23,6 @@ namespace ChatTogether.IoC
         {
             container.Register<IEncryptionService, EncryptionService>();
             container.Register<ISecurityService, SecurityService>();
-            container.Register<IConfirmEmailService, ConfirmEmailService>();
-            container.Register<IChangeEmailService, ChangeEmailService>();
-            container.Register<IChangePasswordService, ChangePasswordService>();
         }
 
         public static void RegisterCommons(this Container container)

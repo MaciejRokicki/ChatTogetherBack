@@ -2,6 +2,7 @@
 using ChatTogether.Commons.EmailSender;
 using ChatTogether.Commons.EmailSender.Models.Templates;
 using ChatTogether.Commons.Exceptions;
+using ChatTogether.Commons.RandomStringGenerator;
 using ChatTogether.Dal.Dbos.Security;
 using ChatTogether.Dal.Interfaces.Security;
 using ChatTogether.Logic.Interfaces.Security;
@@ -18,34 +19,36 @@ namespace ChatTogether.Logic.Services.Security
     {
         private readonly IAccountRepository accountRepository;
         private readonly IEncryptionService encryptionService;
-        private readonly IConfirmEmailService confirmEmailService; 
-        private readonly IChangeEmailService changeEmailService;
-        private readonly IChangePasswordService changePasswordService;
+        private readonly IConfirmEmailTokenRepository confirmEmailTokenRepository;
+        private readonly IChangeEmailTokenRepository changeEmailTokenRepository;
+        private readonly IChangePasswordTokenRepository changePasswordTokenRepository;
         private readonly IEmailSender emailSender;
         private readonly FrontendConfiguration frontendConfiguration;
+        private readonly IRandomStringGenerator randomStringGenerator;
 
         public SecurityService(
             IAccountRepository accountRepository,
-            IEncryptionService encryptionService, 
-            IConfirmEmailService confirmEmailService, 
-            IChangeEmailService changeEmailService, 
-            IChangePasswordService changePasswordService, 
-            IEmailSender emailSender, 
-            IOptions<FrontendConfiguration> frontendConfiguration
-            )
+            IEncryptionService encryptionService,
+            IConfirmEmailTokenRepository confirmEmailTokenRepository,
+            IChangeEmailTokenRepository changeEmailTokenRepository,
+            IChangePasswordTokenRepository changePasswordTokenRepository,
+            IEmailSender emailSender,
+            IOptions<FrontendConfiguration> frontendConfiguration,
+            IRandomStringGenerator randomStringGenerator)
         {
             this.accountRepository = accountRepository;
             this.encryptionService = encryptionService;
-            this.confirmEmailService = confirmEmailService;
-            this.changeEmailService = changeEmailService;
-            this.changePasswordService = changePasswordService;
+            this.confirmEmailTokenRepository = confirmEmailTokenRepository;
+            this.changeEmailTokenRepository = changeEmailTokenRepository;
+            this.changePasswordTokenRepository = changePasswordTokenRepository;
             this.emailSender = emailSender;
             this.frontendConfiguration = frontendConfiguration.Value;
+            this.randomStringGenerator = randomStringGenerator;
         }
 
         public async Task ChangeEmail(string token, string newEmail)
         {
-            ChangeEmailTokenDbo changeEmailTokenDbo = await changeEmailService.Get(token);
+            ChangeEmailTokenDbo changeEmailTokenDbo = await changeEmailTokenRepository.GetWithAccountAsync(x => x.Token == token);
 
             if (changeEmailTokenDbo == null)
             {
@@ -54,29 +57,25 @@ namespace ChatTogether.Logic.Services.Security
 
             AccountDbo newEmailExist = await accountRepository.GetAsync(x => x.Email == newEmail);
 
-            if(newEmailExist != null)
+            if (newEmailExist != null)
             {
                 throw new EmailExistsException();
             }
 
             AccountDbo accountDbo = changeEmailTokenDbo.Account;
 
-            bool isValid = await changeEmailService.CheckToken(accountDbo.Id, token);
+            accountDbo.Email = newEmail;
+            accountDbo.IsConfirmed = false;
+            accountDbo.ChangeEmailTokenDbo = null;
 
-            if (isValid)
-            {
-                accountDbo.Email = newEmail;
-                accountDbo.IsConfirmed = false;
-                accountDbo = await accountRepository.UpdateAsync(accountDbo);
-                await SendConfirmationEmail(accountDbo.Email);
-
-                await changeEmailService.DeleteToken(accountDbo.Id);
-            }
+            accountDbo = await accountRepository.UpdateAsync(accountDbo);
+            await SendConfirmationEmail(accountDbo.Email);
+            await changeEmailTokenRepository.DeleteAsync(x => x.Id == changeEmailTokenDbo.Id);
         }
 
         public async Task ChangePassword(string token, string newPassword)
         {
-            ChangePasswordTokenDbo changePasswordTokenDbo = await changePasswordService.Get(token);
+            ChangePasswordTokenDbo changePasswordTokenDbo = await changePasswordTokenRepository.GetWithAccountAsync(x => x.Token == token);
 
             if (changePasswordTokenDbo == null)
             {
@@ -85,15 +84,11 @@ namespace ChatTogether.Logic.Services.Security
 
             AccountDbo accountDbo = changePasswordTokenDbo.Account;
 
-            bool isValid = await changePasswordService.CheckToken(accountDbo.Id, token);
+            accountDbo.Password = encryptionService.EncryptionSHA256(newPassword);
+            accountDbo.ChangePasswordTokenDbo = null;
 
-            if (isValid)
-            {
-                accountDbo.Password = encryptionService.EncryptionSHA256(accountDbo.Password);
-                accountDbo = await accountRepository.UpdateAsync(accountDbo);
-
-                await changePasswordService.DeleteToken(accountDbo.Id);
-            }
+            accountDbo = await accountRepository.UpdateAsync(accountDbo);
+            await changePasswordTokenRepository.DeleteAsync(x => x.Id == changePasswordTokenDbo.Id);
         }
 
         public async Task ConfirmEmail(string email, string token)
@@ -105,15 +100,11 @@ namespace ChatTogether.Logic.Services.Security
                 throw new IncorrectDataException();
             }
 
-            bool isValid = await confirmEmailService.CheckToken(accountDbo.Id, token);
+            accountDbo.IsConfirmed = true;
+            accountDbo.ConfirmEmailTokenDbo = null;
 
-            if(isValid)
-            {
-                accountDbo.IsConfirmed = true;
-                await accountRepository.UpdateAsync(accountDbo);
-
-                await confirmEmailService.DeleteToken(accountDbo.Id);
-            }
+            await accountRepository.UpdateAsync(accountDbo);
+            await confirmEmailTokenRepository.DeleteAsync(x => x.AccountId == accountDbo.Id);
         }
 
         public async Task ResendConfirmationEmail(string email)
@@ -125,7 +116,7 @@ namespace ChatTogether.Logic.Services.Security
                 throw new IncorrectDataException();
             }
 
-            await confirmEmailService.DeleteToken(accountDbo.Id);
+            await confirmEmailTokenRepository.DeleteAsync(x => x.AccountId == accountDbo.Id);
             await SendConfirmationEmail(email);
         }
 
@@ -138,13 +129,19 @@ namespace ChatTogether.Logic.Services.Security
                 throw new IncorrectDataException();
             }
 
-            ConfirmEmailTokenDbo confirmEmailTokenDbo = await confirmEmailService.CreateToken(accountDbo.Id);
+            ConfirmEmailTokenDbo confirmEmailTokenDbo = new ConfirmEmailTokenDbo()
+            {
+                AccountId = accountDbo.Id,
+                Token = randomStringGenerator.Generate()
+            };
+
+            confirmEmailTokenDbo = await confirmEmailTokenRepository.CreateAsync(confirmEmailTokenDbo);
 
             string url = string.Format("{0}/confirmEmail?email={1}&token={2}", frontendConfiguration.URL, email, confirmEmailTokenDbo.Token);
             await emailSender.Send(email, new ConfirmRegistrationTemplate(email, url));
         }
 
-        public async Task SendRequestToChangeEmail(string email)
+        public async Task ChangeEmailRequest(string email)
         {
             AccountDbo accountDbo = await accountRepository.GetAsync(x => x.Email == email);
 
@@ -153,13 +150,19 @@ namespace ChatTogether.Logic.Services.Security
                 throw new IncorrectDataException();
             }
 
-            ChangeEmailTokenDbo changeEmailTokenDbo = await changeEmailService.CreateToken(accountDbo.Id);
+            ChangeEmailTokenDbo changeEmailTokenDbo = new ChangeEmailTokenDbo()
+            {
+                AccountId = accountDbo.Id,
+                Token = randomStringGenerator.Generate()
+            };
+
+            changeEmailTokenDbo = await changeEmailTokenRepository.CreateAsync(changeEmailTokenDbo);
 
             string url = string.Format("{0}/changeEmail?email={1}&token={2}", frontendConfiguration.URL, email, changeEmailTokenDbo.Token);
             await emailSender.Send(email, new ChangeEmailRequestTemplate(email, url));
         }
 
-        public async Task SendRequestToChangePassword(string email)
+        public async Task ChangePasswordRequest(string email)
         {
             AccountDbo accountDbo = await accountRepository.GetAsync(x => x.Email == email);
 
@@ -168,7 +171,13 @@ namespace ChatTogether.Logic.Services.Security
                 throw new IncorrectDataException();
             }
 
-            ChangePasswordTokenDbo changePasswordTokenDbo = await changePasswordService.CreateToken(accountDbo.Id);
+            ChangePasswordTokenDbo changePasswordTokenDbo = new ChangePasswordTokenDbo()
+            {
+                AccountId = accountDbo.Id,
+                Token = randomStringGenerator.Generate()
+            };
+
+            changePasswordTokenDbo = await changePasswordTokenRepository.CreateAsync(changePasswordTokenDbo);
 
             string url = string.Format("{0}/changePassword?email={1}&token={2}", frontendConfiguration.URL, email, changePasswordTokenDbo.Token);
             await emailSender.Send(email, new ChangePasswordRequestTemplate(email, url));
@@ -190,7 +199,7 @@ namespace ChatTogether.Logic.Services.Security
 
             bool isCorrect = encryptionService.VerifySHA256(accountDto.Password, accountDbo.Password);
 
-            if(!isCorrect)
+            if (!isCorrect)
             {
                 throw new IncorrectDataException();
             }

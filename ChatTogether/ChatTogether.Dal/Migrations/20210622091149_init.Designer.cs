@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatTogether.Dal.Migrations
 {
     [DbContext(typeof(ChatTogetherDbContext))]
-    [Migration("20210617091630_init")]
+    [Migration("20210622091149_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,7 +31,7 @@ namespace ChatTogether.Dal.Migrations
                     b.Property<DateTime>("CreationDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2021, 6, 17, 11, 16, 30, 603, DateTimeKind.Local).AddTicks(169));
+                        .HasDefaultValue(new DateTime(2021, 6, 22, 11, 11, 49, 646, DateTimeKind.Local).AddTicks(3532));
 
                     b.Property<string>("Email")
                         .IsRequired()

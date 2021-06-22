@@ -17,15 +17,15 @@ namespace ChatTogether.Dal.Repositories.Security
             this.chatTogetherDbContext = chatTogetherDbContext;
         }
 
-        public override async Task<ChangeEmailTokenDbo> GetAsync(Expression<Func<ChangeEmailTokenDbo, bool>> exp)
+        public async Task<ChangeEmailTokenDbo> GetWithAccountAsync(Expression<Func<ChangeEmailTokenDbo, bool>> exp)
         {
-            ChangeEmailTokenDbo entity = await chatTogetherDbContext
+            ChangeEmailTokenDbo changeEmailTokenDbo = await chatTogetherDbContext
                 .Set<ChangeEmailTokenDbo>()
-                .AsNoTracking()
                 .Include(x => x.Account)
-                .FirstOrDefaultAsync(exp);
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
 
-            return entity;
+            return changeEmailTokenDbo;
         }
     }
 }

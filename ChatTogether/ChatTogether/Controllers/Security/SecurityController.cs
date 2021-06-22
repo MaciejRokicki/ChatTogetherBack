@@ -75,7 +75,7 @@ namespace ChatTogether.Controllers.Security
         }
 
         [HttpPut("[action]")]
-        public async Task<IActionResult> ChangePassword(string token, string newPassword)
+        public async Task<IActionResult> ChangePassword(string token, [FromBody] string newPassword)
         {
             try
             {
@@ -116,7 +116,7 @@ namespace ChatTogether.Controllers.Security
                     throw new InvalidDataException();
                 }
 
-                await securityService.SendRequestToChangePassword(email);
+                await securityService.ChangePasswordRequest(email);
 
                 return Ok();
             }
@@ -139,13 +139,6 @@ namespace ChatTogether.Controllers.Security
         {
             try
             {
-                ValidationResult validationResult = await loginModelValidator.ValidateAsync(new LoginModel() { Email = email, Password = "strinG1!" });
-
-                if (!validationResult.IsValid)
-                {
-                    throw new InvalidDataException();
-                }
-
                 await securityService.ConfirmEmail(email, token);
 
                 return Ok();
@@ -196,12 +189,12 @@ namespace ChatTogether.Controllers.Security
 
         [HttpPost("[action]")]
         [Authorize]
-        public async Task<IActionResult> SendRequestToChangeEmail()
+        public async Task<IActionResult> ChangeEmailRequest()
         {
             try
             {
                 string email = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
-                await securityService.SendRequestToChangeEmail(email);
+                await securityService.ChangeEmailRequest(email);
 
                 return Ok();
             }
@@ -217,12 +210,12 @@ namespace ChatTogether.Controllers.Security
 
         [HttpPost("[action]")]
         [Authorize]
-        public async Task<IActionResult> SendRequestToChangePassword()
+        public async Task<IActionResult> ChangePasswordRequest()
         {
             try
             {
                 string email = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
-                await securityService.SendRequestToChangePassword(email);
+                await securityService.ChangePasswordRequest(email);
 
                 return Ok();
             }
