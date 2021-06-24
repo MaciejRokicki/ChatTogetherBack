@@ -10,6 +10,7 @@ namespace ChatTogether.Dal.Dbos.Security
         public DateTime CreationDate { get; set; }
         public bool IsConfirmed { get; set; }
 
+        public UserDbo User { get; set; }
         public ConfirmEmailTokenDbo ConfirmEmailTokenDbo { get; set; }
         public ChangeEmailTokenDbo ChangeEmailTokenDbo { get; set; }
         public ChangePasswordTokenDbo ChangePasswordTokenDbo { get; set; }

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ChatTogether.Dal.Mappings
+namespace ChatTogether.Dal.Mappings.Security
 {
     public class ConfirmEmailTokenMapping : IEntityTypeConfiguration<ConfirmEmailTokenDbo>
     {

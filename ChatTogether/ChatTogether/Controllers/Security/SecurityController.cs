@@ -291,6 +291,10 @@ namespace ChatTogether.Controllers.Security
             {
                 return BadRequest(ex.Message);
             }
+            catch (NicknameExistsException ex)
+            {
+                return BadRequest(ex.Message);
+            }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);

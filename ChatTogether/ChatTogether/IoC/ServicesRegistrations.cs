@@ -1,9 +1,14 @@
 ﻿using ChatTogether.Commons.EmailSender;
 using ChatTogether.Commons.RandomStringGenerator;
+using ChatTogether.Dal.Interfaces;
 using ChatTogether.Dal.Interfaces.Security;
+using ChatTogether.Dal.Repositories;
 using ChatTogether.Dal.Repositories.Security;
+using ChatTogether.FluentValidator.Validators;
 using ChatTogether.FluentValidator.Validators.Security;
+using ChatTogether.Logic.Interfaces;
 using ChatTogether.Logic.Interfaces.Security;
+using ChatTogether.Logic.Services;
 using ChatTogether.Logic.Services.Security;
 using SimpleInjector;
 
@@ -17,12 +22,16 @@ namespace ChatTogether.IoC
             container.Register<IConfirmEmailTokenRepository, ConfirmEmailTokenRepository>();
             container.Register<IChangeEmailTokenRepository, ChangeEmailTokenRepository>();
             container.Register<IChangePasswordTokenRepository, ChangePasswordTokenRepository>();
+
+            container.Register<IUserRepository, UserRepository>();
         }
 
         public static void RegisterServices(this Container container)
         {
             container.Register<IEncryptionService, EncryptionService>();
             container.Register<ISecurityService, SecurityService>();
+
+            container.Register<IUserService, UserService>();
         }
 
         public static void RegisterCommons(this Container container)
@@ -35,6 +44,8 @@ namespace ChatTogether.IoC
         {
             container.Register<RegistraionModelValidator>();
             container.Register<LoginModelValidator>();
+
+            container.Register<UserModelValidator>();
         }
     }
 }

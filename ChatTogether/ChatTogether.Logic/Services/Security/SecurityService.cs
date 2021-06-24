@@ -3,8 +3,10 @@ using ChatTogether.Commons.EmailSender;
 using ChatTogether.Commons.EmailSender.Models.Templates;
 using ChatTogether.Commons.Exceptions;
 using ChatTogether.Commons.RandomStringGenerator;
+using ChatTogether.Dal.Dbos;
 using ChatTogether.Dal.Dbos.Security;
 using ChatTogether.Dal.Interfaces.Security;
+using ChatTogether.Logic.Interfaces;
 using ChatTogether.Logic.Interfaces.Security;
 using ChatTogether.Ports.Dtos.Security;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -19,6 +21,7 @@ namespace ChatTogether.Logic.Services.Security
     {
         private readonly IAccountRepository accountRepository;
         private readonly IEncryptionService encryptionService;
+        private readonly IUserService userService;
         private readonly IConfirmEmailTokenRepository confirmEmailTokenRepository;
         private readonly IChangeEmailTokenRepository changeEmailTokenRepository;
         private readonly IChangePasswordTokenRepository changePasswordTokenRepository;
@@ -29,6 +32,7 @@ namespace ChatTogether.Logic.Services.Security
         public SecurityService(
             IAccountRepository accountRepository,
             IEncryptionService encryptionService,
+            IUserService userService,
             IConfirmEmailTokenRepository confirmEmailTokenRepository,
             IChangeEmailTokenRepository changeEmailTokenRepository,
             IChangePasswordTokenRepository changePasswordTokenRepository,
@@ -38,6 +42,7 @@ namespace ChatTogether.Logic.Services.Security
         {
             this.accountRepository = accountRepository;
             this.encryptionService = encryptionService;
+            this.userService = userService;
             this.confirmEmailTokenRepository = confirmEmailTokenRepository;
             this.changeEmailTokenRepository = changeEmailTokenRepository;
             this.changePasswordTokenRepository = changePasswordTokenRepository;
@@ -220,10 +225,23 @@ namespace ChatTogether.Logic.Services.Security
                 throw new EmailExistsException();
             }
 
+            bool isNicknameAvailable = await userService.IsNicknameAvailable(nickname);
+
+            if(!isNicknameAvailable)
+            {
+                throw new NicknameExistsException();
+            }
+
+            UserDbo userDbo = new UserDbo()
+            {
+                Nickname = nickname
+            };
+
             accountDbo = new AccountDbo()
             {
                 Email = accountDto.Email,
-                Password = encryptionService.EncryptionSHA256(accountDto.Password)
+                Password = encryptionService.EncryptionSHA256(accountDto.Password),
+                User = userDbo
             };
 
             accountDbo = await accountRepository.CreateAsync(accountDbo);

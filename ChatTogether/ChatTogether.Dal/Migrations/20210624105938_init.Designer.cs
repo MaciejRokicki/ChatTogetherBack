@@ -4,14 +4,16 @@ using ChatTogether.Dal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ChatTogether.Dal.Migrations
 {
     [DbContext(typeof(ChatTogetherDbContext))]
-    partial class ChatTogetherDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210624105938_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,7 +31,7 @@ namespace ChatTogether.Dal.Migrations
                     b.Property<DateTime>("CreationDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2021, 6, 24, 14, 10, 34, 270, DateTimeKind.Local).AddTicks(2585));
+                        .HasDefaultValue(new DateTime(2021, 6, 24, 12, 59, 38, 271, DateTimeKind.Local).AddTicks(5830));
 
                     b.Property<string>("Email")
                         .IsRequired()

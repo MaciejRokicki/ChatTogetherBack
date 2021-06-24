@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 
-namespace ChatTogether.Dal.Mappings
+namespace ChatTogether.Dal.Mappings.Security
 {
     public class AccountMapping : IEntityTypeConfiguration<AccountDbo>
     {

@@ -23,7 +23,7 @@ namespace ChatTogether.Dal.Repositories.Security
                 .Set<ChangePasswordTokenDbo>()
                 .Include(x => x.Account)
                 .AsNoTracking()
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(exp);
 
             return changePasswordTokenDbo;
         }

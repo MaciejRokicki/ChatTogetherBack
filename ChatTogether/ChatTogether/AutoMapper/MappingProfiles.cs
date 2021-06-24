@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using ChatTogether.Dal.Dbos;
 using ChatTogether.Dal.Dbos.Security;
 using ChatTogether.Ports.Dtos.Security;
+using ChatTogether.ViewModels;
 using ChatTogether.ViewModels.Security;
 
 namespace ChatTogether.AutoMapper
@@ -13,6 +15,9 @@ namespace ChatTogether.AutoMapper
             CreateMap<LoginModel, AccountDto>();
 
             CreateMap<AccountDto, AccountDbo>()
+                .ReverseMap();
+
+            CreateMap<UserDbo, UserViewModel>()
                 .ReverseMap();
         }
     }

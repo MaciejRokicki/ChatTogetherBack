@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatTogether.Dal.Migrations
 {
     [DbContext(typeof(ChatTogetherDbContext))]
-    [Migration("20210622091149_init")]
-    partial class init
+    [Migration("20210624120503_2")]
+    partial class _2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -31,7 +31,7 @@ namespace ChatTogether.Dal.Migrations
                     b.Property<DateTime>("CreationDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2021, 6, 22, 11, 11, 49, 646, DateTimeKind.Local).AddTicks(3532));
+                        .HasDefaultValue(new DateTime(2021, 6, 24, 14, 5, 3, 231, DateTimeKind.Local).AddTicks(742));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -118,6 +118,48 @@ namespace ChatTogether.Dal.Migrations
                     b.ToTable("ConfirmEmailTokens");
                 });
 
+            modelBuilder.Entity("ChatTogether.Dal.Dbos.UserDbo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("BirthDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(600)
+                        .HasColumnType("nvarchar(600)");
+
+                    b.Property<string>("FirstName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("LastName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Nickname")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId")
+                        .IsUnique()
+                        .HasFilter("[AccountId] IS NOT NULL");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.ChangeEmailTokenDbo", b =>
                 {
                     b.HasOne("ChatTogether.Dal.Dbos.Security.AccountDbo", "Account")
@@ -151,6 +193,15 @@ namespace ChatTogether.Dal.Migrations
                     b.Navigation("Account");
                 });
 
+            modelBuilder.Entity("ChatTogether.Dal.Dbos.UserDbo", b =>
+                {
+                    b.HasOne("ChatTogether.Dal.Dbos.Security.AccountDbo", "Account")
+                        .WithOne("User")
+                        .HasForeignKey("ChatTogether.Dal.Dbos.UserDbo", "AccountId");
+
+                    b.Navigation("Account");
+                });
+
             modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.AccountDbo", b =>
                 {
                     b.Navigation("ChangeEmailTokenDbo");
@@ -158,6 +209,8 @@ namespace ChatTogether.Dal.Migrations
                     b.Navigation("ChangePasswordTokenDbo");
 
                     b.Navigation("ConfirmEmailTokenDbo");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }
