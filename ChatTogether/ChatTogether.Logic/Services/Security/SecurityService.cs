@@ -190,7 +190,7 @@ namespace ChatTogether.Logic.Services.Security
 
         public async Task<ClaimsPrincipal> SignIn(AccountDto accountDto)
         {
-            AccountDbo accountDbo = await accountRepository.GetAsync(x => x.Email == accountDto.Email);
+            AccountDbo accountDbo = await accountRepository.GetWithUserAsync(x => x.Email == accountDto.Email);
 
             if (accountDbo == null)
             {
@@ -209,7 +209,7 @@ namespace ChatTogether.Logic.Services.Security
                 throw new IncorrectDataException();
             }
 
-            List<Claim> claims = GetClaims(accountDto.Email);
+            List<Claim> claims = GetClaims(accountDbo.Email, accountDbo.User.Nickname);
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
@@ -248,11 +248,12 @@ namespace ChatTogether.Logic.Services.Security
             await SendConfirmationEmail(accountDbo.Email);
         }
 
-        private List<Claim> GetClaims(string email)
+        private List<Claim> GetClaims(string email, string nickname)
         {
             return new List<Claim>()
             {
-                new Claim(ClaimTypes.Email, email)
+                new Claim(ClaimTypes.Email, email),
+                new Claim("Nickname", nickname)
             };
         }
     }

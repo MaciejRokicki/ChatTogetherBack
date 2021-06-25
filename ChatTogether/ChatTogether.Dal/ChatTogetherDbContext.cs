@@ -16,6 +16,7 @@ namespace ChatTogether.Dal
         public DbSet<ChangePasswordTokenDbo> ChangePasswordTokenDbos { get; set; }
 
         public DbSet<UserDbo> UserDbos { get; set; }
+        public DbSet<RoomDbo> RoomDbos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,6 +26,7 @@ namespace ChatTogether.Dal
             modelBuilder.ApplyConfiguration(new ChangePasswordTokenMapping());
 
             modelBuilder.ApplyConfiguration(new UserMapping());
+            modelBuilder.ApplyConfiguration(new RoomMapping());
         }
     }
 }

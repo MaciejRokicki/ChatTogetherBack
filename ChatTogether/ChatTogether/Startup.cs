@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SimpleInjector;
-using System.Security.Claims;
 
 namespace ChatTogether
 {
@@ -63,7 +62,7 @@ namespace ChatTogether
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<RoomListHub>("/roomList");
+                endpoints.MapHub<RoomHub>("/roomHub");
             });
         }
     }

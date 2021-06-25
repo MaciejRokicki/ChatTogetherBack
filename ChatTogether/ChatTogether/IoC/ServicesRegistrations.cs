@@ -24,6 +24,7 @@ namespace ChatTogether.IoC
             container.Register<IChangePasswordTokenRepository, ChangePasswordTokenRepository>();
 
             container.Register<IUserRepository, UserRepository>();
+            container.Register<IRoomRepository, RoomRepository>();
         }
 
         public static void RegisterServices(this Container container)
@@ -32,6 +33,7 @@ namespace ChatTogether.IoC
             container.Register<ISecurityService, SecurityService>();
 
             container.Register<IUserService, UserService>();
+            container.Register<IRoomService, RoomService>();
         }
 
         public static void RegisterCommons(this Container container)

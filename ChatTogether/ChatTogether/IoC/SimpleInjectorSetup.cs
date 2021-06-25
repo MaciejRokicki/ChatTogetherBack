@@ -20,7 +20,7 @@ namespace ChatTogether.IoC
                     .AddControllerActivation();
             });
 
-            services.RegisterHub(container, typeof(RoomListHub).Assembly);
+            services.RegisterHub(container, typeof(RoomHub).Assembly);
         }
 
         public static void UseSimpleInjectorExtension(this IApplicationBuilder app, Container container)
