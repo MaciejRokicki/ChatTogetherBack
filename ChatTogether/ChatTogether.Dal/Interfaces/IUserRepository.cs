@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChatTogether.Dal.Interfaces
 {
-    public interface IUserRepository : IRepository<UserDbo>
+    public interface IUserRepository : IRepository<int, UserDbo>
     {
         Task<bool> IsNicknameAvailable(string nickname);
         Task<UserDbo> GetWithAccountAsync(Expression<Func<UserDbo, bool>> exp);

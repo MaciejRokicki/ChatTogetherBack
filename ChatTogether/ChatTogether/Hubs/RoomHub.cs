@@ -23,16 +23,16 @@ namespace ChatTogether.Hubs
         private List<RoomHubModel> Rooms;
 
         private readonly IMapper mapper;
-        private readonly IUserService userService;
+        private readonly IMessageService messageService;
 
         public RoomHub(
             IMapper mapper,
             IRoomService roomService,
-            IUserService userService 
+            IMessageService messageService
             )
         {
             this.mapper = mapper;
-            this.userService = userService;
+            this.messageService = messageService;
 
             PaginationPage<RoomDbo> paginationPageDbo = roomService.GetRooms().Result;
             PaginationPage<RoomHubModel> paginationPageViewModel = mapper.Map<PaginationPage<RoomHubModel>>(paginationPageDbo);
@@ -43,16 +43,16 @@ namespace ChatTogether.Hubs
         //w przypadku nieoczekiwanego rozlaczenia
         public override Task OnDisconnectedAsync(Exception exception)
         {
-            string nickname = Context.User.FindFirstValue("Nickname");
+            int userId = int.Parse(Context.User.FindFirstValue("UserId"));
             RoomHubModel roomHubModel = Rooms
                 .Where(x => x.Users
-                    .Where(y => y.Nickname == nickname)
+                    .Where(y => y.Id == userId)
                     .Any())
                 .FirstOrDefault();
 
             roomHubModel.CurrentPeople--;
             UserHubModel userHubModel = roomHubModel.Users
-                .Where(x => x.Nickname == nickname)
+                .Where(x => x.Id == userId)
                 .FirstOrDefault();
 
             roomHubModel.Users.Remove(userHubModel);
@@ -72,11 +72,10 @@ namespace ChatTogether.Hubs
             RoomHubModel room = Rooms
                 .Where(x => x.Id == roomId)
                 .FirstOrDefault();
-
             room.CurrentPeople++;
 
-            string nickname = Context.User.FindFirstValue("Nickname");
-            UserDbo userDbo = await userService.GetUser(nickname);
+            int userId = int.Parse(Context.User.FindFirstValue("UserId"));
+            UserDbo userDbo = new UserDbo() { Id = userId };
             UserHubModel userHubModel = mapper.Map<UserHubModel>(userDbo);
             userHubModel.ConnectionId = Context.ConnectionId;
             room.Users.Add(userHubModel);
@@ -95,22 +94,34 @@ namespace ChatTogether.Hubs
 
             room.CurrentPeople--;
 
-            string nickname = Context.User.FindFirstValue("Nickname");
-            UserHubModel userHubModel = room.Users.Where(x => x.Nickname == nickname).FirstOrDefault();
+            int userId = int.Parse(Context.User.FindFirstValue("UserId"));
+            UserHubModel userHubModel = room.Users
+                .Where(x => x.Id == userId)
+                .FirstOrDefault();
 
             await Groups.RemoveFromGroupAsync(userHubModel.ConnectionId, _groupRoom + roomId);
             room.Users.Remove(userHubModel);
 
-            //string connectionId = Context.ConnectionId;
-            //await Groups.RemoveFromGroupAsync(connectionId, _groupRoom + roomId);
-
             await Clients.All.SendAsync(_rooms, Rooms);
         }
 
+        //TODO: sprawdzic po sklejeniu frontu z backiem
         //wysylanie wiadomosci i ustawianie nasluchu na odbieranie wiadomosci w dla userow nalezacych do danej grupy/pokoju
-        public async Task SendMessage(int roomId, string nickname, string msg)
+        public async Task SendMessage(int roomId, MessageHubModel messageHubModel)
         {
-            await Clients.Group(_groupRoom + roomId).SendAsync(_receiveMessage, nickname, msg);
+            int userId = int.Parse(Context.User.FindFirstValue("UserId"));
+            string nickname = Context.User.FindFirstValue("Nickname");
+
+            messageHubModel.Id = Guid.NewGuid();
+            messageHubModel.UserId = userId;
+            messageHubModel.Nickname = nickname;
+            messageHubModel.RoomId = roomId;
+            messageHubModel.ReceivedTime = DateTime.Now;
+
+            await Clients.Group(_groupRoom + roomId).SendAsync(_receiveMessage, messageHubModel);
+
+            MessageDbo messageDbo = mapper.Map<MessageDbo>(messageHubModel);
+            await messageService.Add(messageDbo);
         }
     }
 }

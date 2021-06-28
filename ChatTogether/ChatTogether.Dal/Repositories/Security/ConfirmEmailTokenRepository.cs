@@ -4,7 +4,7 @@ using ChatTogether.Dal.Interfaces.Security;
 
 namespace ChatTogether.Dal.Repositories.Security
 {
-    public class ConfirmEmailTokenRepository : Repository<ConfirmEmailTokenDbo>, IConfirmEmailTokenRepository
+    public class ConfirmEmailTokenRepository : Repository<int, ConfirmEmailTokenDbo>, IConfirmEmailTokenRepository
     {
         private readonly ChatTogetherDbContext chatTogetherDbContext;
 

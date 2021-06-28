@@ -25,6 +25,7 @@ namespace ChatTogether.IoC
 
             container.Register<IUserRepository, UserRepository>();
             container.Register<IRoomRepository, RoomRepository>();
+            container.Register<IMessageRepository, MessageRepository>();
         }
 
         public static void RegisterServices(this Container container)
@@ -34,6 +35,7 @@ namespace ChatTogether.IoC
 
             container.Register<IUserService, UserService>();
             container.Register<IRoomService, RoomService>();
+            container.Register<IMessageService, MessageService>();
         }
 
         public static void RegisterCommons(this Container container)

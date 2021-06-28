@@ -2,7 +2,7 @@
 
 namespace ChatTogether.Dal.Dbos.Security
 {
-    public class ConfirmEmailTokenDbo : DboModel
+    public class ConfirmEmailTokenDbo : DboModel<int>
     {
         public int AccountId { get; set; }
         public AccountDbo Account { get; set; }

@@ -2,7 +2,7 @@
 
 namespace ChatTogether.Dal.Dbos.Security
 {
-    public class ChangePasswordTokenDbo : DboModel
+    public class ChangePasswordTokenDbo : DboModel<int>
     {
         public int AccountId { get; set; }
         public AccountDbo Account { get; set; }

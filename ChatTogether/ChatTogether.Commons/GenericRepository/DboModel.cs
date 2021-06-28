@@ -1,7 +1,7 @@
 ﻿namespace ChatTogether.Commons.GenericRepository
 {
-    public abstract class DboModel
+    public abstract class DboModel<T>
     {
-        public int Id { get; set; }
+        public T Id { get; set; }
     }
 }

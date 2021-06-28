@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChatTogether.Dal.Repositories
 {
-    public class UserRepository : Repository<UserDbo>, IUserRepository
+    public class UserRepository : Repository<int, UserDbo>, IUserRepository
     {
         private readonly ChatTogetherDbContext chatTogetherDbContext;
 

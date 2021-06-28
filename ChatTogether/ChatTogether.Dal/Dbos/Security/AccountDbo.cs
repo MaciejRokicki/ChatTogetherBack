@@ -3,7 +3,7 @@ using System;
 
 namespace ChatTogether.Dal.Dbos.Security
 {
-    public class AccountDbo : DboModel
+    public class AccountDbo : DboModel<int>
     {
         public string Email { get; set; }
         public string Password { get; set; }

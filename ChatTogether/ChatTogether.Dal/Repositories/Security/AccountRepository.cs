@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChatTogether.Dal.Repositories.Security
 {
-    public class AccountRepository : Repository<AccountDbo>, IAccountRepository
+    public class AccountRepository : Repository<int, AccountDbo>, IAccountRepository
     {
         private readonly ChatTogetherDbContext chatTogetherDbContext;
 

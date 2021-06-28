@@ -1,9 +1,10 @@
 ﻿using ChatTogether.Commons.GenericRepository;
 using ChatTogether.Dal.Dbos;
+using System;
 
 namespace ChatTogether.Dal.Interfaces
 {
-    public interface IRoomRepository : IRepository<int, RoomDbo>
+    public interface IMessageRepository : IRepository<Guid, MessageDbo>
     {
     }
 }

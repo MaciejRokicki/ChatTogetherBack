@@ -209,7 +209,7 @@ namespace ChatTogether.Logic.Services.Security
                 throw new IncorrectDataException();
             }
 
-            List<Claim> claims = GetClaims(accountDbo.Email, accountDbo.User.Nickname);
+            List<Claim> claims = GetClaims(accountDbo.Email, accountDbo.User.Id.ToString(), accountDbo.User.Nickname);
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
@@ -248,11 +248,12 @@ namespace ChatTogether.Logic.Services.Security
             await SendConfirmationEmail(accountDbo.Email);
         }
 
-        private List<Claim> GetClaims(string email, string nickname)
+        private List<Claim> GetClaims(string email, string userId, string nickname)
         {
             return new List<Claim>()
             {
                 new Claim(ClaimTypes.Email, email),
+                new Claim("UserId", userId),
                 new Claim("Nickname", nickname)
             };
         }

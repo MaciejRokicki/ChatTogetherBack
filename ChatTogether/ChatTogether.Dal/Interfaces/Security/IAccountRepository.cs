@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChatTogether.Dal.Interfaces.Security
 {
-    public interface IAccountRepository : IRepository<AccountDbo>
+    public interface IAccountRepository : IRepository<int, AccountDbo>
     {
         Task<AccountDbo> GetWithUserAsync(Expression<Func<AccountDbo, bool>> exp);
     }

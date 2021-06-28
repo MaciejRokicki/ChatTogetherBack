@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChatTogether.Dal.Repositories.Security
 {
-    public class ChangeEmailTokenRepository : Repository<ChangeEmailTokenDbo>, IChangeEmailTokenRepository
+    public class ChangeEmailTokenRepository : Repository<int, ChangeEmailTokenDbo>, IChangeEmailTokenRepository
     {
         private readonly ChatTogetherDbContext chatTogetherDbContext;
 

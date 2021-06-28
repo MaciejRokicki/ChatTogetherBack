@@ -4,7 +4,7 @@ using ChatTogether.Dal.Interfaces;
 
 namespace ChatTogether.Dal.Repositories
 {
-    public class RoomRepository : Repository<RoomDbo>, IRoomRepository
+    public class RoomRepository : Repository<int, RoomDbo>, IRoomRepository
     {
         private readonly ChatTogetherDbContext chatTogetherDbContext;
 

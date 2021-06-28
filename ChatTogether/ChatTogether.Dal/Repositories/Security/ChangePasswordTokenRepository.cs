@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChatTogether.Dal.Repositories.Security
 {
-    public class ChangePasswordTokenRepository : Repository<ChangePasswordTokenDbo>, IChangePasswordTokenRepository
+    public class ChangePasswordTokenRepository : Repository<int, ChangePasswordTokenDbo>, IChangePasswordTokenRepository
     {
         private readonly ChatTogetherDbContext chatTogetherDbContext;
 

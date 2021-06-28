@@ -1,10 +1,11 @@
 ﻿using ChatTogether.Commons.GenericRepository;
 using ChatTogether.Dal.Dbos.Security;
 using System;
+using System.Collections.Generic;
 
 namespace ChatTogether.Dal.Dbos
 {
-    public class UserDbo : DboModel
+    public class UserDbo : DboModel<int>
     {
         public string Nickname { get; set; }
         public string FirstName { get; set; }
@@ -15,5 +16,7 @@ namespace ChatTogether.Dal.Dbos
 
         public int AccountId { get; set; }
         public AccountDbo Account { get; set; }
+
+        public ICollection<MessageDbo> Messages { get; set; }
     }
 }

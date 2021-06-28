@@ -8,10 +8,9 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace ChatTogether.Commons.GenericRepository
 {
-    public abstract class Repository<T> : IRepository<T> where T : DboModel
+    public abstract class Repository<Tkey, T> : IRepository<Tkey, T> where T : DboModel<Tkey>
     {
         protected readonly DbContext ctxt;
 
@@ -63,30 +62,30 @@ namespace ChatTogether.Commons.GenericRepository
         }
 
         //TODO: sprawdzic pozniej na danych (np. jak beda wiadomosci w bazie)
-        public virtual async Task<PaginationPage<T>> GetManyAsync(int page, int pageSize, Filter[] filters = null, Sorting[] sortings = null)
+        public virtual async Task<PaginationPage<T>> GetPageAsync(PaginationQuery paginationQuery)
         {
             IQueryable<T> query = ctxt
                 .Set<T>();
 
-            if(filters.Length != 0)
+            if (paginationQuery.Filters.Length != 0)
             {
-                foreach(Filter filter in filters)
+                foreach (Filter filter in paginationQuery.Filters)
                 {
                     query.Where(string.Format("x => x.{0} {1} {2}", filter.FieldName, FilterOperations.operations[(int)filter.Operation], filter.Value));
                 }
             }
 
             //https://dynamic-linq.net/basic-simple-query#ordering-results
-            if (sortings.Length != 0)
+            if (paginationQuery.Sortings.Length != 0)
             {
                 StringBuilder sortingQuery = new StringBuilder(string.Empty);
 
-                foreach(Sorting sorting in sortings)
+                foreach (Sorting sorting in paginationQuery.Sortings)
                 {
                     sortingQuery.Append(sorting.FieldName);
                     sortingQuery.Append(", ");
-                    
-                    if(!sorting.Ascending)
+
+                    if (!sorting.Ascending)
                     {
                         sortingQuery.Append("desc");
                     }
@@ -94,10 +93,12 @@ namespace ChatTogether.Commons.GenericRepository
 
                 sortingQuery.Remove(sortingQuery.Length - 2, 2);
 
-                query.OrderBy(sortingQuery.ToString());
+                query
+                    .OrderBy(sortingQuery.ToString())
+                    .AsNoTracking();
             }
 
-            PaginationPage<T> paginationPage = await query.GetPaginationPageAsync(page, pageSize);
+            PaginationPage<T> paginationPage = await query.GetPaginationPageAsync(paginationQuery.Page, paginationQuery.PageSize);
 
             return paginationPage;
         }

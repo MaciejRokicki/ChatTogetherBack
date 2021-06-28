@@ -21,7 +21,6 @@ namespace ChatTogether.AutoMapper
 
             CreateMap<UserDbo, UserViewModel>()
                 .ReverseMap();
-
             CreateMap<UserDbo, UserHubModel>();
 
             CreateMap<RoomDbo, RoomViewModel>();
@@ -29,6 +28,20 @@ namespace ChatTogether.AutoMapper
 
             CreateMap<PaginationPage<RoomDbo>, PaginationPage<RoomViewModel>>();
             CreateMap<PaginationPage<RoomDbo>, PaginationPage<RoomHubModel>>();
+
+            CreateMap<MessageDbo, MessageViewModel>()
+                .ForMember(
+                    dest => dest.Nickname,
+                    opt => opt.MapFrom(src => src.User.Nickname)
+                );
+            CreateMap<MessageDbo, MessageHubModel>()
+                .ForMember(
+                    dest => dest.Nickname,
+                    opt => opt.MapFrom(src => src.User.Nickname)
+                );
+            CreateMap<MessageHubModel, MessageDbo>();
+
+            CreateMap<PaginationPage<MessageDbo>, PaginationPage<MessageViewModel>>();
         }
     }
 }

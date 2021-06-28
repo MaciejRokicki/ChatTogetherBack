@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace ChatTogether.Commons.GenericRepository
 {
-    public interface IRepository<T> where T : DboModel
+    public interface IRepository<Tkey, T> where T : DboModel<Tkey>
     {
         Task<T> GetAsync(Expression<Func<T, bool>> exp);
         Task<PaginationPage<T>> GetManyAsync();
-        Task<PaginationPage<T>> GetManyAsync(int page, int pageSize, Filter[] filters = null, Sorting[] sotrings = null);
+        Task<PaginationPage<T>> GetPageAsync(PaginationQuery paginationQuery);
         Task<T> CreateAsync(T entity);
         Task<T> UpdateAsync(T entity);
         Task<T> UpdateAsync(Expression<Func<T, bool>> exp, T entity);

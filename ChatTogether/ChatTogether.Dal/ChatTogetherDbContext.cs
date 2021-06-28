@@ -17,6 +17,7 @@ namespace ChatTogether.Dal
 
         public DbSet<UserDbo> UserDbos { get; set; }
         public DbSet<RoomDbo> RoomDbos { get; set; }
+        public DbSet<MessageDbo> MessageDbos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,6 +28,7 @@ namespace ChatTogether.Dal
 
             modelBuilder.ApplyConfiguration(new UserMapping());
             modelBuilder.ApplyConfiguration(new RoomMapping());
+            modelBuilder.ApplyConfiguration(new MessageMapping());
         }
     }
 }

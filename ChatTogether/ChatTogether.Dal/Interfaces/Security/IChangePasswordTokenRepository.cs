@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChatTogether.Dal.Interfaces.Security
 {
-    public interface IChangePasswordTokenRepository : IRepository<ChangePasswordTokenDbo>
+    public interface IChangePasswordTokenRepository : IRepository<int, ChangePasswordTokenDbo>
     {
         Task<ChangePasswordTokenDbo> GetWithAccountAsync(Expression<Func<ChangePasswordTokenDbo, bool>> exp);
     }
