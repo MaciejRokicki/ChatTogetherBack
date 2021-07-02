@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using ChatTogether.Commons.Pagination.Models;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.Logic.Interfaces;
 using ChatTogether.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ChatTogether.Controllers
@@ -27,12 +27,17 @@ namespace ChatTogether.Controllers
 
         [HttpGet("[action]")]
         [Authorize]
-        public async Task<IActionResult> GetMessages(int roomId, int pageSize, DateTime lastMessageDate)
+        public async Task<IActionResult> GetMessages(int roomId, int size, int timezoneOffset, DateTime? lastMessageDate)
         {
             try
             {
-                PaginationPage<MessageDbo> paginationPageDbo = await messageService.GetMessagePage(roomId, pageSize, lastMessageDate);
-                PaginationPage<MessageViewModel> paginationPageViewModel = mapper.Map<PaginationPage<MessageViewModel>>(paginationPageDbo);
+                if(lastMessageDate == null)
+                {
+                    lastMessageDate = DateTime.UtcNow;
+                }
+
+                IEnumerable<MessageDbo> paginationPageDbo = await messageService.GetMessagesAsync(roomId, size, timezoneOffset, lastMessageDate.Value);
+                IEnumerable<MessageViewModel> paginationPageViewModel = mapper.Map<IEnumerable<MessageViewModel>>(paginationPageDbo);
                 return Ok(paginationPageViewModel);
             }
             catch (Exception ex)

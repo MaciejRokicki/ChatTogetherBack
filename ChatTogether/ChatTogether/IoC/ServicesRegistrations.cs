@@ -6,6 +6,7 @@ using ChatTogether.Dal.Repositories;
 using ChatTogether.Dal.Repositories.Security;
 using ChatTogether.FluentValidator.Validators;
 using ChatTogether.FluentValidator.Validators.Security;
+using ChatTogether.Hubs;
 using ChatTogether.Logic.Interfaces;
 using ChatTogether.Logic.Interfaces.Security;
 using ChatTogether.Logic.Services;

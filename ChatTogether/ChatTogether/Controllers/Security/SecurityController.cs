@@ -1,11 +1,15 @@
 ﻿using AutoMapper;
 using ChatTogether.Commons.Exceptions;
+using ChatTogether.Dal.Dbos;
 using ChatTogether.FluentValidator.Validators.Security;
+using ChatTogether.Logic.Interfaces;
 using ChatTogether.Logic.Interfaces.Security;
 using ChatTogether.Ports.Dtos.Security;
+using ChatTogether.ViewModels;
 using ChatTogether.ViewModels.Security;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +27,7 @@ namespace ChatTogether.Controllers.Security
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IMapper mapper;
         private readonly ISecurityService securityService;
+        private readonly IUserService userService;
         private readonly LoginModelValidator loginModelValidator;
         private readonly RegistraionModelValidator registrationModelValidator;
 
@@ -30,6 +35,7 @@ namespace ChatTogether.Controllers.Security
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper,
             ISecurityService securityService,
+            IUserService userService,
             LoginModelValidator loginModelValidator,
             RegistraionModelValidator registrationModelValidator
             )
@@ -37,6 +43,7 @@ namespace ChatTogether.Controllers.Security
             this.httpContextAccessor = httpContextAccessor;
             this.mapper = mapper;
             this.securityService = securityService;
+            this.userService = userService;
             this.loginModelValidator = loginModelValidator;
             this.registrationModelValidator = registrationModelValidator;
         }
@@ -242,11 +249,13 @@ namespace ChatTogether.Controllers.Security
                 }
 
                 AccountDto accountDto = mapper.Map<AccountDto>(loginModel);
-                ClaimsPrincipal claimsPrincipal = await securityService.SignIn(accountDto);
+                (ClaimsPrincipal claimsPrincipal, UserDbo userDbo) = await securityService.SignIn(accountDto);
 
-                await httpContextAccessor.HttpContext.SignInAsync(claimsPrincipal);
+                await httpContextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
 
-                return Ok();
+                UserViewModel userViewModel = mapper.Map<UserViewModel>(userDbo);
+
+                return Ok(userViewModel);
             }
             catch (IncorrectDataException ex)
             {
@@ -310,6 +319,25 @@ namespace ChatTogether.Controllers.Security
                 await httpContextAccessor.HttpContext.SignOutAsync();
 
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("[action]")]
+        [Authorize]
+        public async Task<IActionResult> Validate()
+        {
+            try
+            {
+                string nickname = httpContextAccessor.HttpContext.User.FindFirstValue("Nickname");
+
+                UserDbo userDbo = await userService.GetUser(nickname);
+                UserViewModel userViewModel = mapper.Map<UserViewModel>(userDbo);
+
+                return Ok(userViewModel);
             }
             catch (Exception ex)
             {

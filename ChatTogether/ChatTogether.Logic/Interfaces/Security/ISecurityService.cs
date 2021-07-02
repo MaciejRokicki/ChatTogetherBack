@@ -1,4 +1,5 @@
-﻿using ChatTogether.Ports.Dtos.Security;
+﻿using ChatTogether.Dal.Dbos;
+using ChatTogether.Ports.Dtos.Security;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -6,7 +7,7 @@ namespace ChatTogether.Logic.Interfaces.Security
 {
     public interface ISecurityService
     {
-        Task<ClaimsPrincipal> SignIn(AccountDto accountDto);
+        Task<(ClaimsPrincipal, UserDbo)> SignIn(AccountDto accountDto);
         Task SignUp(AccountDto accountDto, string nickname);
 
         Task ResendConfirmationEmail(string email);

@@ -1,11 +1,9 @@
-﻿using ChatTogether.Commons.Pagination;
-using ChatTogether.Commons.Pagination.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ChatTogether.Commons.GenericRepository
@@ -51,56 +49,26 @@ namespace ChatTogether.Commons.GenericRepository
             return entity;
         }
 
-        public virtual async Task<PaginationPage<T>> GetManyAsync()
+        public virtual async Task<IEnumerable<T>> GetManyAsync()
         {
-            PaginationPage<T> page = await ctxt
+            IEnumerable<T> entites = await ctxt
                 .Set<T>()
                 .AsNoTracking()
-                .GetPaginationPageAsync();
+                .ToListAsync();
 
-            return page;
+            return entites;
         }
 
         //TODO: sprawdzic pozniej na danych (np. jak beda wiadomosci w bazie)
-        public virtual async Task<PaginationPage<T>> GetPageAsync(PaginationQuery paginationQuery)
+        public virtual async Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> exp)
         {
-            IQueryable<T> query = ctxt
-                .Set<T>();
+            IEnumerable<T> entites = await ctxt
+                .Set<T>()
+                .Where(exp)
+                .AsNoTracking()
+                .ToListAsync();
 
-            if (paginationQuery.Filters.Length != 0)
-            {
-                foreach (Filter filter in paginationQuery.Filters)
-                {
-                    query.Where(string.Format("x => x.{0} {1} {2}", filter.FieldName, FilterOperations.operations[(int)filter.Operation], filter.Value));
-                }
-            }
-
-            //https://dynamic-linq.net/basic-simple-query#ordering-results
-            if (paginationQuery.Sortings.Length != 0)
-            {
-                StringBuilder sortingQuery = new StringBuilder(string.Empty);
-
-                foreach (Sorting sorting in paginationQuery.Sortings)
-                {
-                    sortingQuery.Append(sorting.FieldName);
-                    sortingQuery.Append(", ");
-
-                    if (!sorting.Ascending)
-                    {
-                        sortingQuery.Append("desc");
-                    }
-                }
-
-                sortingQuery.Remove(sortingQuery.Length - 2, 2);
-
-                query
-                    .OrderBy(sortingQuery.ToString())
-                    .AsNoTracking();
-            }
-
-            PaginationPage<T> paginationPage = await query.GetPaginationPageAsync(paginationQuery.Page, paginationQuery.PageSize);
-
-            return paginationPage;
+            return entites;
         }
 
         public virtual async Task<T> UpdateAsync(T entity)

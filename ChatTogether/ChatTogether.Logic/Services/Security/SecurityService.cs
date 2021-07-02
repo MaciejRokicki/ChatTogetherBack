@@ -188,7 +188,7 @@ namespace ChatTogether.Logic.Services.Security
             await emailSender.Send(email, new ChangePasswordRequestTemplate(email, url));
         }
 
-        public async Task<ClaimsPrincipal> SignIn(AccountDto accountDto)
+        public async Task<(ClaimsPrincipal, UserDbo)> SignIn(AccountDto accountDto)
         {
             AccountDbo accountDbo = await accountRepository.GetWithUserAsync(x => x.Email == accountDto.Email);
 
@@ -213,7 +213,7 @@ namespace ChatTogether.Logic.Services.Security
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-            return claimsPrincipal;
+            return (claimsPrincipal, accountDbo.User);
         }
 
         public async Task SignUp(AccountDto accountDto, string nickname)

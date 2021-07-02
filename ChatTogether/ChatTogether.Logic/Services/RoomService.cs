@@ -1,7 +1,7 @@
-﻿using ChatTogether.Commons.Pagination.Models;
-using ChatTogether.Dal.Dbos;
+﻿using ChatTogether.Dal.Dbos;
 using ChatTogether.Dal.Interfaces;
 using ChatTogether.Logic.Interfaces;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ChatTogether.Logic.Services
@@ -22,9 +22,9 @@ namespace ChatTogether.Logic.Services
             return roomDbo;
         }
 
-        public async Task<PaginationPage<RoomDbo>> GetRooms()
+        public async Task<IEnumerable<RoomDbo>> GetRooms()
         {
-            PaginationPage<RoomDbo> paginationPage = await roomRepository.GetManyAsync();
+            IEnumerable<RoomDbo> paginationPage = await roomRepository.GetManyAsync();
 
             return paginationPage;
         }

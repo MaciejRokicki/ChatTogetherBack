@@ -1,8 +1,8 @@
-﻿using ChatTogether.Commons.Pagination.Models;
-using ChatTogether.Dal.Dbos;
+﻿using ChatTogether.Dal.Dbos;
 using ChatTogether.Dal.Interfaces;
 using ChatTogether.Logic.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ChatTogether.Logic.Services
@@ -21,35 +21,17 @@ namespace ChatTogether.Logic.Services
             await messageRepository.CreateAsync(messageDbo);
         }
 
-        public async Task<PaginationPage<MessageDbo>> GetMessagePage(int roomId, int pageSize, DateTime lastMessageDate)
+        public async Task<IEnumerable<MessageDbo>> GetMessagesAsync(int roomId, int size, int timezoneOffset, DateTime lastMessageDate)
         {
-            PaginationQuery paginationQuery = new PaginationQuery()
+            IEnumerable<MessageDbo> messages = await messageRepository.GetMessagesAsync(roomId, size, lastMessageDate);
+
+            foreach(MessageDbo message in messages)
             {
-                Page = 1,
-                PageSize = pageSize,
-                Sortings = new Sorting[]
-                {
-                    new Sorting()
-                    {
-                        FieldName = "SendTime",
-                        Ascending = true
-                    }
-                },
-                Filters = new Filter[]
-                {
-                    new Filter()
-                    {
-                        FieldName = "SendTime",
-                        Operation = Operation.LE,
-                        Type = FieldType.STRING_TYPE,
-                        Value = lastMessageDate.ToString()
-                    }
-                }
-            };
+                message.SendTime = message.SendTime.AddMinutes(-timezoneOffset);
+                message.ReceivedTime = message.ReceivedTime.AddMinutes(-timezoneOffset);
+            }
 
-            PaginationPage<MessageDbo> page = await messageRepository.GetPageAsync(paginationQuery);
-
-            return page;
+            return messages;
         }
     }
 }

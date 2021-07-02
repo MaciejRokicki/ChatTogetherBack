@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using ChatTogether.Commons.Pagination.Models;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.Logic.Interfaces;
 using ChatTogether.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ChatTogether.Controllerss
@@ -47,8 +47,8 @@ namespace ChatTogether.Controllerss
         {
             try
             {
-                PaginationPage<RoomDbo> paginationPageDbo = await roomService.GetRooms();
-                PaginationPage<RoomViewModel> paginationPageViewModel = mapper.Map<PaginationPage<RoomViewModel>>(paginationPageDbo);
+                IEnumerable<RoomDbo> paginationPageDbo = await roomService.GetRooms();
+                IEnumerable<RoomViewModel> paginationPageViewModel = mapper.Map<IEnumerable<RoomViewModel>>(paginationPageDbo);
                 return Ok(paginationPageViewModel);
             }
             catch (Exception ex)

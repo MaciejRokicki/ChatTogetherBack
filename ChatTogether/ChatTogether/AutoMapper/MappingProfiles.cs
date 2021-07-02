@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ChatTogether.Commons.Pagination.Models;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.Dal.Dbos.Security;
 using ChatTogether.HubModels;
@@ -26,9 +25,6 @@ namespace ChatTogether.AutoMapper
             CreateMap<RoomDbo, RoomViewModel>();
             CreateMap<RoomDbo, RoomHubModel>();
 
-            CreateMap<PaginationPage<RoomDbo>, PaginationPage<RoomViewModel>>();
-            CreateMap<PaginationPage<RoomDbo>, PaginationPage<RoomHubModel>>();
-
             CreateMap<MessageDbo, MessageViewModel>()
                 .ForMember(
                     dest => dest.Nickname,
@@ -40,8 +36,6 @@ namespace ChatTogether.AutoMapper
                     opt => opt.MapFrom(src => src.User.Nickname)
                 );
             CreateMap<MessageHubModel, MessageDbo>();
-
-            CreateMap<PaginationPage<MessageDbo>, PaginationPage<MessageViewModel>>();
         }
     }
 }
