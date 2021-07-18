@@ -8,6 +8,6 @@ namespace ChatTogether.Logic.Interfaces
     public interface IMessageService
     {
         Task Add(MessageDbo messageDbo);
-        Task<IEnumerable<MessageDbo>> GetMessagesAsync(int roomId, int size, int timezoneOffset, DateTime lastMessageDate);
+        Task<IEnumerable<MessageDbo>> GetMessagesAsync(int roomId, int size, DateTime lastMessageDate);
     }
 }

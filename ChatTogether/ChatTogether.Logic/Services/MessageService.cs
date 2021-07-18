@@ -21,15 +21,9 @@ namespace ChatTogether.Logic.Services
             await messageRepository.CreateAsync(messageDbo);
         }
 
-        public async Task<IEnumerable<MessageDbo>> GetMessagesAsync(int roomId, int size, int timezoneOffset, DateTime lastMessageDate)
+        public async Task<IEnumerable<MessageDbo>> GetMessagesAsync(int roomId, int size, DateTime lastMessageDate)
         {
             IEnumerable<MessageDbo> messages = await messageRepository.GetMessagesAsync(roomId, size, lastMessageDate);
-
-            foreach(MessageDbo message in messages)
-            {
-                message.SendTime = message.SendTime.AddMinutes(-timezoneOffset);
-                message.ReceivedTime = message.ReceivedTime.AddMinutes(-timezoneOffset);
-            }
 
             return messages;
         }

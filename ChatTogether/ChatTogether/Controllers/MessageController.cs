@@ -27,7 +27,7 @@ namespace ChatTogether.Controllers
 
         [HttpGet("[action]")]
         [Authorize]
-        public async Task<IActionResult> GetMessages(int roomId, int size, int timezoneOffset, DateTime? lastMessageDate)
+        public async Task<IActionResult> GetMessages(int roomId, int size, DateTime? lastMessageDate)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace ChatTogether.Controllers
                     lastMessageDate = DateTime.UtcNow;
                 }
 
-                IEnumerable<MessageDbo> paginationPageDbo = await messageService.GetMessagesAsync(roomId, size, timezoneOffset, lastMessageDate.Value);
+                IEnumerable<MessageDbo> paginationPageDbo = await messageService.GetMessagesAsync(roomId, size, lastMessageDate.Value);
                 IEnumerable<MessageViewModel> paginationPageViewModel = mapper.Map<IEnumerable<MessageViewModel>>(paginationPageDbo);
                 return Ok(paginationPageViewModel);
             }
