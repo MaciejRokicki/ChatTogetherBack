@@ -6,9 +6,10 @@ using ChatTogether.Dal.Repositories;
 using ChatTogether.Dal.Repositories.Security;
 using ChatTogether.FluentValidator.Validators;
 using ChatTogether.FluentValidator.Validators.Security;
-using ChatTogether.Hubs;
-using ChatTogether.Logic.Interfaces;
-using ChatTogether.Logic.Interfaces.Security;
+using ChatTogether.Logic.Interfaces.MemoryStores;
+using ChatTogether.Logic.Interfaces.Services;
+using ChatTogether.Logic.Interfaces.Services.Security;
+using ChatTogether.Logic.MemoryStores;
 using ChatTogether.Logic.Services;
 using ChatTogether.Logic.Services.Security;
 using SimpleInjector;
@@ -51,6 +52,8 @@ namespace ChatTogether.IoC
             container.Register<LoginModelValidator>();
 
             container.Register<UserModelValidator>();
+
+            container.Register<IRoomMemoryStore, RoomMemoryStore>(Lifestyle.Singleton);
         }
     }
 }

@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using ChatTogether.Dal.Dbos;
-using ChatTogether.HubModels;
-using ChatTogether.Logic.Interfaces;
+using ChatTogether.Logic.Interfaces.MemoryStores;
+using ChatTogether.Logic.Interfaces.Services;
+using ChatTogether.Ports.HubModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -17,102 +16,68 @@ namespace ChatTogether.Hubs
     {
         private const string _groupRoom = "GROUP_ROOM_";
 
-        private List<RoomHubModel> Rooms;
-
         private readonly IMapper mapper;
         private readonly IMessageService messageService;
+        private readonly IRoomMemoryStore roomMemoryStore;
 
         public RoomHub(
             IMapper mapper,
-            IRoomService roomService,
-            IMessageService messageService
+            IMessageService messageService,
+            IRoomMemoryStore roomMemoryStore
             )
         {
             this.mapper = mapper;
             this.messageService = messageService;
-
-            IEnumerable<RoomDbo> paginationPageDbo = roomService.GetRooms().Result;
-            IEnumerable<RoomHubModel> paginationPageViewModel = mapper.Map<IEnumerable<RoomHubModel>>(paginationPageDbo);
-            Rooms = paginationPageViewModel.ToList();
-
-            foreach(RoomHubModel room in Rooms)
-            {
-                room.Users = new List<UserHubModel>();
-            }
+            this.roomMemoryStore = roomMemoryStore;
         }
 
-        //TODO: przetestowac po sklejeniu backendu z frontem
-        //w przypadku nieoczekiwanego rozlaczenia
-        //public override Task OnDisconnectedAsync(Exception exception)
-        //{
-        //    int userId = int.Parse(Context.User.FindFirstValue("UserId"));
-        //    RoomHubModel roomHubModel = Rooms
-        //        .Where(x => x.Users
-        //            .Where(y => y.Id == userId)
-        //            .Any())
-        //        .FirstOrDefault();
+        public override async Task OnConnectedAsync()
+        {
+            await Clients.All.GetRooms(roomMemoryStore.GetRooms());
+            await base.OnConnectedAsync();
+        }
 
-        //    if(roomHubModel != null)
-        //    {
-        //        roomHubModel.CurrentPeople--;
-        //        UserHubModel userHubModel = roomHubModel.Users
-        //            .Where(x => x.Id == userId)
-        //            .FirstOrDefault();
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            roomMemoryStore.Exit(Context.ConnectionId);
 
-        //        roomHubModel.Users.Remove(userHubModel);
-        //    }
+            await Clients.All.GetRooms(roomMemoryStore.GetRooms());
 
-        //    return base.OnDisconnectedAsync(exception);
-        //}
+            await base.OnDisconnectedAsync(exception);
+        }
 
-        //po wejsciu w strone z lista pokoi do wyboru
         public async Task GetRooms()
         {
-            await Clients.All.GetRooms(Rooms);
+            await Clients.All.GetRooms(roomMemoryStore.GetRooms());
         }
 
-        //po wejsciu w dany pokoj
         public async Task EnterRoom(int roomId)
         {
-            //RoomHubModel room = Rooms
-            //    .Where(x => x.Id == roomId)
-            //    .FirstOrDefault();
-            //room.CurrentPeople++;
-
             int userId = int.Parse(Context.User.FindFirstValue("UserId"));
+
             UserHubModel userHubModel = new UserHubModel()
             {
                 Id = userId,
                 ConnectionId = Context.ConnectionId
             };
-            //room.Users.Add(userHubModel);
 
-            await Groups.AddToGroupAsync(userHubModel.ConnectionId, _groupRoom + roomId);
-            await Clients.All.GetRooms(Rooms);
+            bool res = roomMemoryStore.Enter(roomId, userHubModel);
+
+            if(res)
+            {
+                await Groups.AddToGroupAsync(userHubModel.ConnectionId, _groupRoom + roomId);
+                await Clients.All.GetRooms(roomMemoryStore.GetRooms());
+            }
         }
 
-        //po wyjsciu z danego pokoju
         public async Task ExitRoom(int roomId)
         {
-            //RoomHubModel room = Rooms
-            //    .Where(x => x.Id == roomId)
-            //    .FirstOrDefault();
-
-            //room.CurrentPeople--;
-
-            //int userId = int.Parse(Context.User.FindFirstValue("UserId"));
-            //UserHubModel userHubModel = room.Users
-            //    .Where(x => x.Id == userId)
-            //    .FirstOrDefault();
-
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, _groupRoom + roomId);
-            //room.Users.Remove(userHubModel);
+            roomMemoryStore.Exit(roomId, Context.ConnectionId);
 
-            await Clients.All.GetRooms(Rooms);
+            await Clients.All.GetRooms(roomMemoryStore.GetRooms());
         }
 
-        //TODO: sprawdzic po sklejeniu frontu z backiem
-        //wysylanie wiadomosci i ustawianie nasluchu na odbieranie wiadomosci w dla userow nalezacych do danej grupy/pokoju
         public async Task SendMessage(MessageHubModel messageHubModel)
         {
             int userId = int.Parse(Context.User.FindFirstValue("UserId"));
@@ -123,7 +88,6 @@ namespace ChatTogether.Hubs
             messageHubModel.Nickname = nickname;
             messageHubModel.ReceivedTime = DateTime.UtcNow;
 
-            //await Clients.Group(_groupRoom + messageHubModel.RoomId).ReceiveMessage(messageHubModel);
             await Clients.GroupExcept(_groupRoom + messageHubModel.RoomId, Context.ConnectionId).ReceiveMessage(messageHubModel);
 
             MessageDbo messageDbo = mapper.Map<MessageDbo>(messageHubModel);

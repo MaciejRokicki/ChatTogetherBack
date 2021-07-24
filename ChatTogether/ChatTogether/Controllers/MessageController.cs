@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using ChatTogether.Dal.Dbos;
-using ChatTogether.Logic.Interfaces;
+using ChatTogether.Logic.Interfaces.Services;
 using ChatTogether.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

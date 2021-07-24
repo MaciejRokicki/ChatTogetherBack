@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.Dal.Dbos.Security;
-using ChatTogether.HubModels;
 using ChatTogether.Ports.Dtos.Security;
+using ChatTogether.Ports.HubModels;
 using ChatTogether.ViewModels;
 using ChatTogether.ViewModels.Security;
 

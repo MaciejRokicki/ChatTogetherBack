@@ -2,8 +2,8 @@
 using ChatTogether.Commons.Exceptions;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.FluentValidator.Validators.Security;
-using ChatTogether.Logic.Interfaces;
-using ChatTogether.Logic.Interfaces.Security;
+using ChatTogether.Logic.Interfaces.Services;
+using ChatTogether.Logic.Interfaces.Services.Security;
 using ChatTogether.Ports.Dtos.Security;
 using ChatTogether.ViewModels;
 using ChatTogether.ViewModels.Security;

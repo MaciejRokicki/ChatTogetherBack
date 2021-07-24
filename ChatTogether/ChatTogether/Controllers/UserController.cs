@@ -2,7 +2,7 @@
 using ChatTogether.Commons.Exceptions;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.FluentValidator.Validators;
-using ChatTogether.Logic.Interfaces;
+using ChatTogether.Logic.Interfaces.Services;
 using ChatTogether.ViewModels;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;

@@ -3,7 +3,7 @@ using ChatTogether.Ports.Dtos.Security;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace ChatTogether.Logic.Interfaces.Security
+namespace ChatTogether.Logic.Interfaces.Services.Security
 {
     public interface ISecurityService
     {

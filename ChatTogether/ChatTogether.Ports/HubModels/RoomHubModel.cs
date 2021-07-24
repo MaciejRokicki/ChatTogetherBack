@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ChatTogether.HubModels
+namespace ChatTogether.Ports.HubModels
 {
     public class RoomHubModel
     {

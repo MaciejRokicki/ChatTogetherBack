@@ -1,4 +1,4 @@
-﻿using ChatTogether.HubModels;
+﻿using ChatTogether.Ports.HubModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

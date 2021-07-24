@@ -1,6 +1,6 @@
 ﻿using ChatTogether.Dal.Dbos;
 using ChatTogether.Dal.Interfaces;
-using ChatTogether.Logic.Interfaces;
+using ChatTogether.Logic.Interfaces.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

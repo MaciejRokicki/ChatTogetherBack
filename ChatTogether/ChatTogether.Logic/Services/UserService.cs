@@ -1,7 +1,7 @@
 ﻿using ChatTogether.Commons.Exceptions;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.Dal.Interfaces;
-using ChatTogether.Logic.Interfaces;
+using ChatTogether.Logic.Interfaces.Services;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;

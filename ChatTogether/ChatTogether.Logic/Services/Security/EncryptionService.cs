@@ -1,4 +1,4 @@
-﻿using ChatTogether.Logic.Interfaces.Security;
+﻿using ChatTogether.Logic.Interfaces.Services.Security;
 using System;
 using System.Security.Cryptography;
 using System.Text;

@@ -1,7 +1,7 @@
 ﻿using ChatTogether.Dal.Dbos;
 using System.Threading.Tasks;
 
-namespace ChatTogether.Logic.Interfaces
+namespace ChatTogether.Logic.Interfaces.Services
 {
     public interface IUserService
     {
