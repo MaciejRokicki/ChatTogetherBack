@@ -67,6 +67,12 @@ namespace ChatTogether.Logic.Services
 
                 object newValue = prop.GetValue(updatedUserDbo);
 
+                if(prop.Name == "BirthDate")
+                {
+                    prop.SetValue(userDbo, newValue);
+                    continue;
+                }
+
                 if(newValue != null)
                 {
                     prop.SetValue(userDbo, newValue);
