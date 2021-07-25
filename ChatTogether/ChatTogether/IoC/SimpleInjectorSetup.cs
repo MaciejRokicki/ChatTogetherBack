@@ -37,6 +37,7 @@ namespace ChatTogether.IoC
             container.RegisterServices();
             container.RegisterCommons();
             container.RegisterValidators();
+            container.RegisterMemoryStores();
         }
 
         private static void RegisterHub(this IServiceCollection services, Container container, Assembly assembly)
