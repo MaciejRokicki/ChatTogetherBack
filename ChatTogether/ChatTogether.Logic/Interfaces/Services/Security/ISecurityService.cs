@@ -10,7 +10,7 @@ namespace ChatTogether.Logic.Interfaces.Services.Security
         Task<(ClaimsPrincipal, UserDbo)> SignIn(AccountDto accountDto);
         Task SignUp(AccountDto accountDto, string nickname);
 
-        Task ResendConfirmationEmail(string email);
+        Task SendConfirmationEmail(string email);
         Task ConfirmEmail(string email, string token);
 
         Task ChangeEmailRequest(string email);

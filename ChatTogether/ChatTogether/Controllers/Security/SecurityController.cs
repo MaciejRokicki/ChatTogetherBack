@@ -176,7 +176,7 @@ namespace ChatTogether.Controllers.Security
                     throw new InvalidDataException();
                 }
 
-                await securityService.ResendConfirmationEmail(email);
+                await securityService.SendConfirmationEmail(email);
 
                 return Ok();
             }
