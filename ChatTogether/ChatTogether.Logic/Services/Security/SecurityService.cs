@@ -74,7 +74,7 @@ namespace ChatTogether.Logic.Services.Security
             accountDbo.ChangeEmailTokenDbo = null;
 
             accountDbo = await accountRepository.UpdateAsync(accountDbo);
-            await SendConfirmationEmail(accountDbo.Email);
+            await SendConfirmationEmail(accountDbo.Email, false);
             await changeEmailTokenRepository.DeleteAsync(x => x.Id == changeEmailTokenDbo.Id);
         }
 
@@ -112,7 +112,7 @@ namespace ChatTogether.Logic.Services.Security
             await confirmEmailTokenRepository.DeleteAsync(x => x.AccountId == accountDbo.Id);
         }
 
-        public async Task SendConfirmationEmail(string email)
+        public async Task SendConfirmationEmail(string email, bool isNewAccount = true)
         {
             AccountDbo accountDbo = await accountRepository.GetAsync(x => x.Email == email);
 
@@ -136,8 +136,16 @@ namespace ChatTogether.Logic.Services.Security
 
             confirmEmailTokenDbo = await confirmEmailTokenRepository.CreateAsync(confirmEmailTokenDbo);
 
-            string url = string.Format("{0}#/security/email/confirm/{1}/{2}", frontendConfiguration.URL, email, confirmEmailTokenDbo.Token);
-            await emailSender.Send(email, new ConfirmRegistrationTemplate(email, url));
+            if (isNewAccount)
+            {
+                string url = string.Format("{0}#/security/email/confirm/{1}/{2}", frontendConfiguration.URL, email, confirmEmailTokenDbo.Token);
+                await emailSender.Send(email, new ConfirmRegistrationTemplate(email, url));
+            }
+            else
+            {
+                string url = string.Format("{0}#/security/email/confirm/{1}/{2}", frontendConfiguration.URL, email, confirmEmailTokenDbo.Token);
+                await emailSender.Send(email, new ConfirmChangeEmailTemplate(email, url));
+            }
         }
 
         public async Task ChangeEmailRequest(string email)

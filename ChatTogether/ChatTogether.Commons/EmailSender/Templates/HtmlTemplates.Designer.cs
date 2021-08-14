@@ -61,12 +61,15 @@ namespace ChatTogether.Commons.EmailSender.Templates {
         }
         
         /// <summary>
-        /// Wyszukuje zlokalizowany ciąg podobny do ciągu &lt;b&gt;Witaj {{email}}&lt;/b&gt;
-        ///&lt;br&gt;Aby potwierdzić zmianę adresu email na &lt;b&gt;{{newEmail}}&lt;/b&gt; klikij w poniższy link.
-        ///&lt;br&gt;
-        ///{{confirmationLink}}
-        ///&lt;br&gt;
-        ///Aby zakończyć proces zmiany adresu email, zostanie wysłana kolejna wiadomość na nowy adres email w celu potwierdzenia operacji..
+        /// Wyszukuje zlokalizowany ciąg podobny do ciągu &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Roboto:wght&quot; rel=&quot;stylesheet&quot;&gt;
+        ///&lt;table width=&quot;100%&quot; ; style=&quot;font-family: &apos;Roboto&apos;, sans-serif; font-size: 1.1em; background-color: #d9ddf2;&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+        ///    &lt;tbody&gt;
+        ///        &lt;tr&gt;
+        ///            &lt;td width=&quot;100%&quot; align=&quot;center&quot;&gt;
+        ///                &lt;table width=&quot;550px&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; align=&quot;center&quot; style=&quot;margin: 10px;&quot;&gt;
+        ///                    &lt;tbody&gt;
+        ///                        &lt;tr&gt;
+        ///                      [obcięto pozostałą część ciągu]&quot;;.
         /// </summary>
         internal static string ChangeEmailRequestTemplate {
             get {
@@ -75,10 +78,15 @@ namespace ChatTogether.Commons.EmailSender.Templates {
         }
         
         /// <summary>
-        /// Wyszukuje zlokalizowany ciąg podobny do ciągu &lt;b&gt;Witaj {{email}}&lt;/b&gt;
-        ///&lt;br&gt;Kliknij w poniższy link, aby zmienić hasło.
-        ///&lt;br&gt;
-        ///{{confirmationLink}}.
+        /// Wyszukuje zlokalizowany ciąg podobny do ciągu &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Roboto:wght&quot; rel=&quot;stylesheet&quot;&gt;
+        ///&lt;table width=&quot;100%&quot; ; style=&quot;font-family: &apos;Roboto&apos;, sans-serif; font-size: 1.1em; background-color: #d9ddf2;&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+        ///    &lt;tbody&gt;
+        ///        &lt;tr&gt;
+        ///            &lt;td width=&quot;100%&quot; align=&quot;center&quot;&gt;
+        ///                &lt;table width=&quot;550px&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; align=&quot;center&quot; style=&quot;margin: 10px;&quot;&gt;
+        ///                    &lt;tbody&gt;
+        ///                        &lt;tr&gt;
+        ///                      [obcięto pozostałą część ciągu]&quot;;.
         /// </summary>
         internal static string ChangePasswordRequestTemplate {
             get {
@@ -87,11 +95,15 @@ namespace ChatTogether.Commons.EmailSender.Templates {
         }
         
         /// <summary>
-        /// Wyszukuje zlokalizowany ciąg podobny do ciągu &lt;b&gt;Witaj {{email}}&lt;/b&gt;
-        ///&lt;br&gt;Aby zakończyć proces zmiany adresu email kliknij w poniższy link.
-        ///&lt;br&gt;
-        ///{{confirmationLink}}
-        ///&lt;br&gt;.
+        /// Wyszukuje zlokalizowany ciąg podobny do ciągu &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Roboto:wght&quot; rel=&quot;stylesheet&quot;&gt;
+        ///&lt;table width=&quot;100%&quot; ; style=&quot;font-family: &apos;Roboto&apos;, sans-serif; font-size: 1.1em; background-color: #d9ddf2;&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+        ///    &lt;tbody&gt;
+        ///        &lt;tr&gt;
+        ///            &lt;td width=&quot;100%&quot; align=&quot;center&quot;&gt;
+        ///                &lt;table width=&quot;550px&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; align=&quot;center&quot; style=&quot;margin: 10px;&quot;&gt;
+        ///                    &lt;tbody&gt;
+        ///                        &lt;tr&gt;
+        ///                      [obcięto pozostałą część ciągu]&quot;;.
         /// </summary>
         internal static string ConfirmChangeEmailTemplate {
             get {
@@ -100,10 +112,15 @@ namespace ChatTogether.Commons.EmailSender.Templates {
         }
         
         /// <summary>
-        /// Wyszukuje zlokalizowany ciąg podobny do ciągu &lt;b&gt;Witaj {{email}}&lt;/b&gt;
-        ///&lt;br&gt;Kliknij w poniższy link, aby potwierdzić utworzenie konta.
-        ///&lt;br&gt;
-        ///{{confirmationLink}}.
+        /// Wyszukuje zlokalizowany ciąg podobny do ciągu &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Roboto:wght&quot; rel=&quot;stylesheet&quot;&gt;
+        ///&lt;table width=&quot;100%&quot; ; style=&quot;font-family: &apos;Roboto&apos;, sans-serif; font-size: 1.1em; background-color: #d9ddf2;&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+        ///    &lt;tbody&gt;
+        ///        &lt;tr&gt;
+        ///            &lt;td width=&quot;100%&quot; align=&quot;center&quot;&gt;
+        ///                &lt;table width=&quot;550px&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; align=&quot;center&quot; style=&quot;margin: 10px;&quot;&gt;
+        ///                    &lt;tbody&gt;
+        ///                        &lt;tr&gt;
+        ///                      [obcięto pozostałą część ciągu]&quot;;.
         /// </summary>
         internal static string ConfirmRegistrationTemplate {
             get {
