@@ -15,6 +15,16 @@ namespace ChatTogether.Logic.Services
             this.roomRepository = roomRepository;
         }
 
+        public async Task CreateRoom(RoomDbo roomDbo)
+        {
+            await roomRepository.CreateAsync(roomDbo);
+        }
+
+        public async Task DeleteRoom(int id)
+        {
+            await roomRepository.DeleteAsync(x => x.Id == id);
+        }
+
         public async Task<RoomDbo> GetRoom(int id)
         {
             RoomDbo roomDbo = await roomRepository.GetAsync(x => x.Id == id);
@@ -27,6 +37,11 @@ namespace ChatTogether.Logic.Services
             IEnumerable<RoomDbo> paginationPage = await roomRepository.GetManyAsync();
 
             return paginationPage;
+        }
+
+        public async Task UpdateRoom(RoomDbo roomDbo)
+        {
+            await roomRepository.UpdateAsync(roomDbo);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using ChatTogether.Commons.Exceptions;
+using ChatTogether.Commons.Role;
 using ChatTogether.Dal.Dbos;
+using ChatTogether.Dal.Dbos.Security;
 using ChatTogether.FluentValidator.Validators.Security;
 using ChatTogether.Logic.Interfaces.Services;
 using ChatTogether.Logic.Interfaces.Services.Security;
@@ -14,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -269,6 +272,14 @@ namespace ChatTogether.Controllers.Security
             {
                 return BadRequest(ex.Message);
             }
+            catch(BlockedAccountException ex)
+            {
+                return BadRequest(new Dictionary<string, object>()
+                {
+                    { "message", ex.Message },
+                    { "data", ex.Data["BlockedAccount"] },
+                });
+            }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -356,6 +367,72 @@ namespace ChatTogether.Controllers.Security
                 ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
 
                 await httpContextAccessor.HttpContext.SignInAsync(claimsPrincipal);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("[action]")]
+        [AuthorizeRoles(Role.ADMINISTRATOR)]
+        public async Task<IActionResult> ChangeRole([FromBody] ChangeRoleModel changeRoleViewModel)
+        {
+            try
+            {
+                await securityService.ChangeRole(changeRoleViewModel.UserId, changeRoleViewModel.Role);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("[action]")]
+        [AuthorizeRoles(Role.MODERATOR, Role.ADMINISTRATOR)]
+        public async Task<IActionResult> GetBlockedUsers()
+        {
+            try
+            {
+                IEnumerable<BlockedAccountDbo> blockedUsers = await securityService.GetBlockedUsers();
+
+                IEnumerable<BlockedAccountViewModel> result = mapper.Map<IEnumerable<BlockedAccountViewModel>>(blockedUsers);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("[action]")]
+        [AuthorizeRoles(Role.MODERATOR, Role.ADMINISTRATOR)]
+        public async Task<IActionResult> BlockUser([FromBody] BlockAccountModel blockAccountViewModel)
+        {
+            try
+            {
+                await securityService.BlockAccount(blockAccountViewModel.UserId, blockAccountViewModel.Reason, blockAccountViewModel.BlockedTo);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("[action]")]
+        [AuthorizeRoles(Role.MODERATOR, Role.ADMINISTRATOR)]
+        public async Task<IActionResult> UnblockUser([FromBody] int userId)
+        {
+            try
+            {
+                await securityService.UnblockAccount(userId);
 
                 return Ok();
             }

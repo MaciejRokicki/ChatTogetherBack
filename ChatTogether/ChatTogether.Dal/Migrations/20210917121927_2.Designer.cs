@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatTogether.Dal.Migrations
 {
     [DbContext(typeof(ChatTogetherDbContext))]
-    [Migration("20210628090413_5")]
-    partial class _5
+    [Migration("20210917121927_2")]
+    partial class _2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -78,10 +78,11 @@ namespace ChatTogether.Dal.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("CreationDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2021, 6, 28, 11, 4, 13, 359, DateTimeKind.Local).AddTicks(6555));
+                    b.Property<int?>("BlockedAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -97,9 +98,41 @@ namespace ChatTogether.Dal.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("USER");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("BlockedAccountId")
+                        .IsUnique()
+                        .HasFilter("[BlockedAccountId] IS NOT NULL");
+
                     b.ToTable("Accounts");
+                });
+
+            modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.BlockedAccountDbo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime?>("BlockedTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BlockedAccounts");
                 });
 
             modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.ChangeEmailTokenDbo", b =>
@@ -228,6 +261,16 @@ namespace ChatTogether.Dal.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.AccountDbo", b =>
+                {
+                    b.HasOne("ChatTogether.Dal.Dbos.Security.BlockedAccountDbo", "BlockedAccountDbo")
+                        .WithOne("Account")
+                        .HasForeignKey("ChatTogether.Dal.Dbos.Security.AccountDbo", "BlockedAccountId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("BlockedAccountDbo");
+                });
+
             modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.ChangeEmailTokenDbo", b =>
                 {
                     b.HasOne("ChatTogether.Dal.Dbos.Security.AccountDbo", "Account")
@@ -286,6 +329,11 @@ namespace ChatTogether.Dal.Migrations
                     b.Navigation("ConfirmEmailTokenDbo");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.BlockedAccountDbo", b =>
+                {
+                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("ChatTogether.Dal.Dbos.UserDbo", b =>

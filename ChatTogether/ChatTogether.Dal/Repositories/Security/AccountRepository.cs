@@ -22,6 +22,7 @@ namespace ChatTogether.Dal.Repositories.Security
             AccountDbo accountDbo = await chatTogetherDbContext
                 .Set<AccountDbo>()
                 .Include(x => x.User)
+                .Include(x => x.BlockedAccountDbo)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(exp);
 

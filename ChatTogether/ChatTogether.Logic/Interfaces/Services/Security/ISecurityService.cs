@@ -1,5 +1,9 @@
-﻿using ChatTogether.Dal.Dbos;
+﻿using ChatTogether.Commons.Role;
+using ChatTogether.Dal.Dbos;
+using ChatTogether.Dal.Dbos.Security;
 using ChatTogether.Ports.Dtos.Security;
+using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -18,5 +22,11 @@ namespace ChatTogether.Logic.Interfaces.Services.Security
 
         Task ChangePasswordRequest(string email);
         Task ChangePassword(string token, string newPassword);
+
+        Task ChangeRole(int userId, Role role);
+
+        Task BlockAccount(int userId, string reason, DateTime? blockedTo = null);
+        Task UnblockAccount(int userId);
+        Task<IEnumerable<BlockedAccountDbo>> GetBlockedUsers();
     }
 }

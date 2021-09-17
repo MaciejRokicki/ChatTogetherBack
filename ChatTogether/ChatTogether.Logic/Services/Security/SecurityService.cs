@@ -3,6 +3,7 @@ using ChatTogether.Commons.EmailSender;
 using ChatTogether.Commons.EmailSender.Models.Templates;
 using ChatTogether.Commons.Exceptions;
 using ChatTogether.Commons.RandomStringGenerator;
+using ChatTogether.Commons.Role;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.Dal.Dbos.Security;
 using ChatTogether.Dal.Interfaces.Security;
@@ -11,6 +12,7 @@ using ChatTogether.Logic.Interfaces.Services.Security;
 using ChatTogether.Ports.Dtos.Security;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -20,6 +22,7 @@ namespace ChatTogether.Logic.Services.Security
     public class SecurityService : ISecurityService
     {
         private readonly IAccountRepository accountRepository;
+        private readonly IBlockedAccountRepository blockedAccountRepository;
         private readonly IEncryptionService encryptionService;
         private readonly IUserService userService;
         private readonly IConfirmEmailTokenRepository confirmEmailTokenRepository;
@@ -31,6 +34,7 @@ namespace ChatTogether.Logic.Services.Security
 
         public SecurityService(
             IAccountRepository accountRepository,
+            IBlockedAccountRepository blockedAccountRepository,
             IEncryptionService encryptionService,
             IUserService userService,
             IConfirmEmailTokenRepository confirmEmailTokenRepository,
@@ -41,6 +45,7 @@ namespace ChatTogether.Logic.Services.Security
             IRandomStringGenerator randomStringGenerator)
         {
             this.accountRepository = accountRepository;
+            this.blockedAccountRepository = blockedAccountRepository;
             this.encryptionService = encryptionService;
             this.userService = userService;
             this.confirmEmailTokenRepository = confirmEmailTokenRepository;
@@ -225,7 +230,19 @@ namespace ChatTogether.Logic.Services.Security
                 throw new IncorrectDataException();
             }
 
-            List<Claim> claims = GetClaims(accountDbo.Email, accountDbo.User.Id.ToString(), accountDbo.User.Nickname);
+            if(accountDbo.BlockedAccountId != null)
+            {
+                if (accountDbo.BlockedAccountDbo.BlockedTo == null || accountDbo.BlockedAccountDbo.BlockedTo >= DateTime.UtcNow)
+                {
+                    throw new BlockedAccountException(accountDbo.BlockedAccountDbo.Reason, accountDbo.BlockedAccountDbo.Created, accountDbo.BlockedAccountDbo.BlockedTo);
+                }
+                else
+                {
+                    await UnblockAccount(accountDbo.User.Id);
+                }
+            }
+
+            List<Claim> claims = GetClaims(accountDbo.Email, accountDbo.Role, accountDbo.User.Id.ToString(), accountDbo.User.Nickname);
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
@@ -264,14 +281,71 @@ namespace ChatTogether.Logic.Services.Security
             await SendConfirmationEmail(accountDbo.Email);
         }
 
-        private List<Claim> GetClaims(string email, string userId, string nickname)
+        private List<Claim> GetClaims(string email, Role role, string userId, string nickname)
         {
             return new List<Claim>()
             {
                 new Claim(ClaimTypes.Email, email),
+                new Claim(ClaimTypes.Role, role.ToString()),
                 new Claim("UserId", userId),
                 new Claim("Nickname", nickname)
             };
+        }
+
+        public async Task ChangeRole(int userId, Role role)
+        {
+            AccountDbo accountDbo = await accountRepository.GetWithUserAsync(x => x.User.Id == userId);
+
+            if (accountDbo == null)
+            {
+                return;
+            }
+
+            accountDbo.Role = role;
+
+            await accountRepository.UpdateAsync(accountDbo);
+        }
+
+        public async Task BlockAccount(int userId, string reason, DateTime? blockedTo = null)
+        {
+            AccountDbo accountDbo = await accountRepository.GetWithUserAsync(x => x.User.Id == userId);
+
+            if (accountDbo == null)
+            {
+                return;
+            }
+
+            if (accountDbo.BlockedAccountId != null)
+            {
+                await blockedAccountRepository.DeleteAsync(x => x.Id == accountDbo.BlockedAccountId);
+            }
+
+            accountDbo.BlockedAccountDbo = new BlockedAccountDbo()
+            {
+                Reason = reason,
+                BlockedTo = blockedTo
+            };
+
+            await accountRepository.UpdateAsync(accountDbo);
+        }
+
+        public async Task UnblockAccount(int userId)
+        {
+            AccountDbo accountDbo = await accountRepository.GetWithUserAsync(x => x.User.Id == userId);
+
+            if(accountDbo == null)
+            {
+                return;
+            }
+
+            await blockedAccountRepository.DeleteAsync(x => x.Id == accountDbo.BlockedAccountId);
+        }
+
+        public async Task<IEnumerable<BlockedAccountDbo>> GetBlockedUsers()
+        {
+            IEnumerable<BlockedAccountDbo> blockedUsers = await blockedAccountRepository.GetManyAsync();
+
+            return blockedUsers;
         }
     }
 }

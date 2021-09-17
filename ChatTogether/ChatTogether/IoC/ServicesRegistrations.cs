@@ -21,6 +21,7 @@ namespace ChatTogether.IoC
         public static void RegisterRepositories(this Container container)
         {
             container.Register<IAccountRepository, AccountRepository>();
+            container.Register<IBlockedAccountRepository, BlockedAccountRepository>();
             container.Register<IConfirmEmailTokenRepository, ConfirmEmailTokenRepository>();
             container.Register<IChangeEmailTokenRepository, ChangeEmailTokenRepository>();
             container.Register<IChangePasswordTokenRepository, ChangePasswordTokenRepository>();

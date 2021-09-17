@@ -1,7 +1,7 @@
-﻿using ChatTogether.Dal.Dbos.Security;
+﻿using ChatTogether.Commons.Role;
+using ChatTogether.Dal.Dbos.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
 
 namespace ChatTogether.Dal.Mappings.Security
 {
@@ -22,14 +22,25 @@ namespace ChatTogether.Dal.Mappings.Security
                 .IsRequired();
 
             builder
-                .Property(x => x.CreationDate)
-                .HasDefaultValue(DateTime.Now)
+                .Property(x => x.Created)
                 .IsRequired();
 
             builder
                 .Property(x => x.IsConfirmed)
                 .HasDefaultValue(false)
                 .IsRequired();
+
+            builder
+                .Property(x => x.Role)
+                .HasConversion<string>()
+                .HasDefaultValue(Role.USER)
+                .IsRequired();
+
+            builder
+                .HasOne(x => x.BlockedAccountDbo)
+                .WithOne(x => x.Account)
+                .HasForeignKey<AccountDbo>(x => x.BlockedAccountId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder
                 .ToTable("Accounts");

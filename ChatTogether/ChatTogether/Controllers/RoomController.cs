@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ChatTogether.Commons.Role;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.Logic.Interfaces.Services;
 using ChatTogether.ViewModels;
@@ -50,6 +51,56 @@ namespace ChatTogether.Controllerss
                 IEnumerable<RoomDbo> paginationPageDbo = await roomService.GetRooms();
                 IEnumerable<RoomViewModel> paginationPageViewModel = mapper.Map<IEnumerable<RoomViewModel>>(paginationPageDbo);
                 return Ok(paginationPageViewModel);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("[action]")]
+        [AuthorizeRoles(Role.ADMINISTRATOR)]
+        public async Task<IActionResult> CreateRoom([FromBody] RoomViewModel roomViewModel)
+        {
+            try
+            {
+                RoomDbo roomDbo = mapper.Map<RoomDbo>(roomViewModel);
+                await roomService.CreateRoom(roomDbo);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("[action]")]
+        [AuthorizeRoles(Role.ADMINISTRATOR)]
+        public async Task<IActionResult> UpdateRoom([FromBody] RoomViewModel roomViewModel)
+        {
+            try
+            {
+                RoomDbo roomDbo = mapper.Map<RoomDbo>(roomViewModel);
+                await roomService.UpdateRoom(roomDbo);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("[action]")]
+        [AuthorizeRoles(Role.ADMINISTRATOR)]
+        public async Task<IActionResult> DeleteRoom([FromBody] int roomId)
+        {
+            try
+            {
+                await roomService.DeleteRoom(roomId);
+
+                return Ok();
             }
             catch (Exception ex)
             {

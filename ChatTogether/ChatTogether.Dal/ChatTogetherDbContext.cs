@@ -11,6 +11,7 @@ namespace ChatTogether.Dal
         public ChatTogetherDbContext(DbContextOptions<ChatTogetherDbContext> options) : base(options) { }
 
         public DbSet<AccountDbo> AccountDbos { get; set; }
+        public DbSet<BlockedAccountDbo> BlockedAccountDbos { get; set; }
         public DbSet<ConfirmEmailTokenDbo> confirmEmailTokenDbos { get; set; }
         public DbSet<ChangeEmailTokenDbo> ChangeEmailTokenDbos { get; set; }
         public DbSet<ChangePasswordTokenDbo> ChangePasswordTokenDbos { get; set; }
@@ -22,6 +23,7 @@ namespace ChatTogether.Dal
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new AccountMapping());
+            modelBuilder.ApplyConfiguration(new BlockedAccountMapping());
             modelBuilder.ApplyConfiguration(new ConfirmEmailTokenMapping());
             modelBuilder.ApplyConfiguration(new ChangeEmailTokenMapping());
             modelBuilder.ApplyConfiguration(new ChangePasswordTokenMapping());

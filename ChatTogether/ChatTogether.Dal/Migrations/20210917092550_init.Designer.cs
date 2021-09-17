@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatTogether.Dal.Migrations
 {
     [DbContext(typeof(ChatTogetherDbContext))]
-    [Migration("20210624120503_2")]
-    partial class _2
+    [Migration("20210917092550_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,6 +21,56 @@ namespace ChatTogether.Dal.Migrations
                 .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("ChatTogether.Dal.Dbos.MessageDbo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ReceivedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RoomId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SendTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoomId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("ChatTogether.Dal.Dbos.RoomDbo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("MaxPeople")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Rooms");
+                });
+
             modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.AccountDbo", b =>
                 {
                     b.Property<int>("Id")
@@ -28,10 +78,11 @@ namespace ChatTogether.Dal.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("CreationDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2021, 6, 24, 14, 5, 3, 231, DateTimeKind.Local).AddTicks(742));
+                    b.Property<int?>("BlockedAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -47,9 +98,41 @@ namespace ChatTogether.Dal.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("USER");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("BlockedAccountId")
+                        .IsUnique()
+                        .HasFilter("[BlockedAccountId] IS NOT NULL");
+
                     b.ToTable("Accounts");
+                });
+
+            modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.BlockedAccountDbo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime?>("BlockedTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BlockedAccounts");
                 });
 
             modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.ChangeEmailTokenDbo", b =>
@@ -125,7 +208,7 @@ namespace ChatTogether.Dal.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AccountId")
+                    b.Property<int>("AccountId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("BirthDate")
@@ -154,10 +237,37 @@ namespace ChatTogether.Dal.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId")
-                        .IsUnique()
-                        .HasFilter("[AccountId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ChatTogether.Dal.Dbos.MessageDbo", b =>
+                {
+                    b.HasOne("ChatTogether.Dal.Dbos.RoomDbo", "Room")
+                        .WithMany("Messages")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ChatTogether.Dal.Dbos.UserDbo", "User")
+                        .WithMany("Messages")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Room");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.AccountDbo", b =>
+                {
+                    b.HasOne("ChatTogether.Dal.Dbos.Security.BlockedAccountDbo", "BlockedAccountDbo")
+                        .WithOne("Account")
+                        .HasForeignKey("ChatTogether.Dal.Dbos.Security.AccountDbo", "BlockedAccountId");
+
+                    b.Navigation("BlockedAccountDbo");
                 });
 
             modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.ChangeEmailTokenDbo", b =>
@@ -197,9 +307,16 @@ namespace ChatTogether.Dal.Migrations
                 {
                     b.HasOne("ChatTogether.Dal.Dbos.Security.AccountDbo", "Account")
                         .WithOne("User")
-                        .HasForeignKey("ChatTogether.Dal.Dbos.UserDbo", "AccountId");
+                        .HasForeignKey("ChatTogether.Dal.Dbos.UserDbo", "AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("ChatTogether.Dal.Dbos.RoomDbo", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.AccountDbo", b =>
@@ -211,6 +328,16 @@ namespace ChatTogether.Dal.Migrations
                     b.Navigation("ConfirmEmailTokenDbo");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.BlockedAccountDbo", b =>
+                {
+                    b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("ChatTogether.Dal.Dbos.UserDbo", b =>
+                {
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

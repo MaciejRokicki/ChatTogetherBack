@@ -8,5 +8,8 @@ namespace ChatTogether.Logic.Interfaces.Services
     {
         Task<RoomDbo> GetRoom(int id);
         Task<IEnumerable<RoomDbo>> GetRooms();
+        Task CreateRoom(RoomDbo roomDbo);
+        Task UpdateRoom(RoomDbo roomDbo);
+        Task DeleteRoom(int id);
     }
 }
