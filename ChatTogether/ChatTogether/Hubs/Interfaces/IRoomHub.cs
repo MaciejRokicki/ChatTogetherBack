@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ChatTogether.Hubs
+namespace ChatTogether.Hubs.Interfaces
 {
     public interface IRoomHub
     {

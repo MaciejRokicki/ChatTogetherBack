@@ -1,12 +1,17 @@
 ﻿using AutoMapper;
 using ChatTogether.Commons.Exceptions;
+using ChatTogether.Commons.Page;
 using ChatTogether.Commons.Role;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.Dal.Dbos.Security;
 using ChatTogether.FluentValidator.Validators.Security;
+using ChatTogether.Hubs;
+using ChatTogether.Hubs.Interfaces;
+using ChatTogether.Logic.Interfaces.MemoryStores;
 using ChatTogether.Logic.Interfaces.Services;
 using ChatTogether.Logic.Interfaces.Services.Security;
 using ChatTogether.Ports.Dtos.Security;
+using ChatTogether.Ports.HubModels;
 using ChatTogether.ViewModels;
 using ChatTogether.ViewModels.Security;
 using FluentValidation.Results;
@@ -15,6 +20,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -33,6 +39,8 @@ namespace ChatTogether.Controllers.Security
         private readonly IUserService userService;
         private readonly LoginModelValidator loginModelValidator;
         private readonly RegistraionModelValidator registrationModelValidator;
+        private readonly IUserMemoryStore userMemoryStore;
+        private readonly IHubContext<InformationHub, IInformationHub> informationHub;
 
         public SecurityController(
             IHttpContextAccessor httpContextAccessor,
@@ -40,8 +48,9 @@ namespace ChatTogether.Controllers.Security
             ISecurityService securityService,
             IUserService userService,
             LoginModelValidator loginModelValidator,
-            RegistraionModelValidator registrationModelValidator
-            )
+            RegistraionModelValidator registrationModelValidator,
+            IHubContext<InformationHub, IInformationHub> informationHub, 
+            IUserMemoryStore userMemoryStore)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.mapper = mapper;
@@ -49,6 +58,8 @@ namespace ChatTogether.Controllers.Security
             this.userService = userService;
             this.loginModelValidator = loginModelValidator;
             this.registrationModelValidator = registrationModelValidator;
+            this.informationHub = informationHub;
+            this.userMemoryStore = userMemoryStore;
         }
 
         [HttpPut("[action]")]
@@ -394,13 +405,13 @@ namespace ChatTogether.Controllers.Security
 
         [HttpGet("[action]")]
         [AuthorizeRoles(Role.MODERATOR, Role.ADMINISTRATOR)]
-        public async Task<IActionResult> GetBlockedUsers()
+        public async Task<IActionResult> GetBlockedUsers(int page = 1, string search = "")
         {
             try
             {
-                IEnumerable<BlockedAccountDbo> blockedUsers = await securityService.GetBlockedUsers();
+                Page<BlockedAccountDbo> blockedUsers = await securityService.GetBlockedUsers(page, 10, search);
 
-                IEnumerable<BlockedAccountViewModel> result = mapper.Map<IEnumerable<BlockedAccountViewModel>>(blockedUsers);
+                Page<BlockedAccountViewModel> result = mapper.Map<Page<BlockedAccountViewModel>>(blockedUsers);
 
                 return Ok(result);
             }
@@ -417,6 +428,13 @@ namespace ChatTogether.Controllers.Security
             try
             {
                 await securityService.BlockAccount(blockAccountViewModel.UserId, blockAccountViewModel.Reason, blockAccountViewModel.BlockedTo);
+
+                UserHubModel userHubModel = userMemoryStore.GetUser(blockAccountViewModel.UserId);
+
+                if (userHubModel != null)
+                {
+                    await informationHub.Clients.Client(userHubModel.ConnectionId).Signout();
+                }
 
                 return Ok();
             }

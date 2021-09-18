@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ChatTogether.Dal.Dbos;
+using ChatTogether.Hubs.Interfaces;
 using ChatTogether.Logic.Interfaces.MemoryStores;
 using ChatTogether.Logic.Interfaces.Services;
 using ChatTogether.Ports.HubModels;

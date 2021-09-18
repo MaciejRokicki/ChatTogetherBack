@@ -2,6 +2,7 @@
 using ChatTogether.Commons.EmailSender;
 using ChatTogether.Commons.EmailSender.Models.Templates;
 using ChatTogether.Commons.Exceptions;
+using ChatTogether.Commons.Page;
 using ChatTogether.Commons.RandomStringGenerator;
 using ChatTogether.Commons.Role;
 using ChatTogether.Dal.Dbos;
@@ -341,9 +342,9 @@ namespace ChatTogether.Logic.Services.Security
             await blockedAccountRepository.DeleteAsync(x => x.Id == accountDbo.BlockedAccountId);
         }
 
-        public async Task<IEnumerable<BlockedAccountDbo>> GetBlockedUsers()
+        public async Task<Page<BlockedAccountDbo>> GetBlockedUsers(int page, int pageSize, string search)
         {
-            IEnumerable<BlockedAccountDbo> blockedUsers = await blockedAccountRepository.GetManyAsync();
+            Page<BlockedAccountDbo> blockedUsers = await blockedAccountRepository.GetManyAsync(page, pageSize, search);
 
             return blockedUsers;
         }

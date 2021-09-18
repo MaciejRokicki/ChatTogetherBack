@@ -58,6 +58,7 @@ namespace ChatTogether.IoC
         public static void RegisterMemoryStores(this Container container)
         {
             container.Register<IRoomMemoryStore, RoomMemoryStore>(Lifestyle.Singleton);
+            container.Register<IUserMemoryStore, UserMemoryStore>(Lifestyle.Singleton);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ChatTogether.Commons.Page;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.Dal.Dbos.Security;
 using ChatTogether.Ports.Dtos.Security;
@@ -27,6 +28,8 @@ namespace ChatTogether.AutoMapper
                     opt => opt.MapFrom(src => src.Account.User.LastName)
                 );
 
+            CreateMap<Page<BlockedAccountDbo>, Page<BlockedAccountViewModel>>();
+
             CreateMap<RegistrationModel, AccountDto>();
             CreateMap<LoginModel, AccountDto>();
 
@@ -34,11 +37,17 @@ namespace ChatTogether.AutoMapper
                 .ReverseMap();
 
             CreateMap<UserDbo, UserViewModel>()
-                .ReverseMap();
+                .ForMember(
+                    dest => dest.Role,
+                    opt => opt.MapFrom(src => src.Account.Role)
+                );
+            CreateMap<UserViewModel, UserDbo>();
             CreateMap<UserDbo, UserHubModel>();
 
-            CreateMap<RoomDbo, RoomViewModel>();
-            CreateMap<RoomDbo, RoomHubModel>();
+            CreateMap<RoomDbo, RoomViewModel>()
+                .ReverseMap();
+            CreateMap<RoomDbo, RoomHubModel>()
+                .ReverseMap();
 
             CreateMap<MessageDbo, MessageViewModel>()
                 .ForMember(

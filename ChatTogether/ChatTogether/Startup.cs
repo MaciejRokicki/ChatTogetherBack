@@ -62,6 +62,7 @@ namespace ChatTogether
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<InformationHub>("/informationHub");
                 endpoints.MapHub<RoomHub>("/roomHub");
             });
         }

@@ -1,9 +1,9 @@
-﻿using ChatTogether.Commons.Role;
+﻿using ChatTogether.Commons.Page;
+using ChatTogether.Commons.Role;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.Dal.Dbos.Security;
 using ChatTogether.Ports.Dtos.Security;
 using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -27,6 +27,6 @@ namespace ChatTogether.Logic.Interfaces.Services.Security
 
         Task BlockAccount(int userId, string reason, DateTime? blockedTo = null);
         Task UnblockAccount(int userId);
-        Task<IEnumerable<BlockedAccountDbo>> GetBlockedUsers();
+        Task<Page<BlockedAccountDbo>> GetBlockedUsers(int page, int pageSize, string search);
     }
 }
