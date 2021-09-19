@@ -8,5 +8,6 @@ namespace ChatTogether.Hubs.Interfaces
     {
         Task GetRooms(ICollection<RoomHubModel> rooms);
         Task ReceiveMessage(MessageHubModel messageHubModel);
+        Task RemoveRoomUsers();
     }
 }

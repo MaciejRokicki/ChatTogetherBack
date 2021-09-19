@@ -36,7 +36,7 @@ namespace ChatTogether.Logic.Services
 
         public async Task<UserDbo> GetUser(string nickname)
         {
-            UserDbo userDbo = await userRepsitory.GetAsync(x => x.Nickname == nickname);
+            UserDbo userDbo = await userRepsitory.GetWithAccountAsync(x => x.Nickname == nickname);
 
             return userDbo;
         }

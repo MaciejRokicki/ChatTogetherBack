@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
-using ChatTogether.Commons.Exceptions;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.Logic.Interfaces.MemoryStores;
 using ChatTogether.Logic.Interfaces.Services;
 using ChatTogether.Ports.HubModels;
 using SimpleInjector;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -91,13 +89,9 @@ namespace ChatTogether.Logic.MemoryStores
         public RoomHubModel UpdateRoom(RoomDbo roomDbo)
         {
             RoomHubModel roomHubModel = mapper.Map<RoomHubModel>(roomDbo);
+            roomHubModel.Users = new List<UserHubModel>();
 
             RoomHubModel room = Rooms.First(x => x.Id == roomHubModel.Id);
-
-            if (room.CurrentPeople != 0)
-            {
-                throw new NotEmptyRoomException();
-            }
 
             int id = Rooms.IndexOf(room);
             Rooms[id] = roomHubModel;
@@ -108,11 +102,6 @@ namespace ChatTogether.Logic.MemoryStores
         public bool DeleteRoom(int id)
         {
             RoomHubModel room = Rooms.First(x => x.Id == id);
-
-            if (room.CurrentPeople != 0)
-            {
-                throw new NotEmptyRoomException();
-            }
 
             Rooms.RemoveAt(Rooms.IndexOf(room));
 

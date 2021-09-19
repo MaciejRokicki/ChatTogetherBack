@@ -20,6 +20,8 @@ namespace ChatTogether.Controllerss
     [Route("api/[controller]")]
     public class RoomController : ControllerBase
     {
+        private const string _groupRoom = "GROUP_ROOM_";
+
         private readonly IMapper mapper;
         private readonly IRoomService roomService;
         private readonly IRoomMemoryStore roomMemoryStore;
@@ -81,7 +83,9 @@ namespace ChatTogether.Controllerss
 
                 await roomHub.Clients.All.GetRooms(roomMemoryStore.GetRooms());
 
-                return Ok();    
+                RoomViewModel res = mapper.Map<RoomViewModel>(roomDbo);
+
+                return Ok(res);    
             }
             catch (Exception ex)
             {
@@ -89,7 +93,7 @@ namespace ChatTogether.Controllerss
             }
         }
 
-        [HttpPost("[action]")]
+        [HttpPut("[action]")]
         [AuthorizeRoles(Role.ADMINISTRATOR)]
         public async Task<IActionResult> UpdateRoom([FromBody] RoomViewModel roomViewModel)
         {
@@ -104,10 +108,12 @@ namespace ChatTogether.Controllerss
                 }
 
                 await roomService.UpdateRoom(roomDbo);
-
+                await roomHub.Clients.Group(_groupRoom + roomHubModel.Id).RemoveRoomUsers();
                 await roomHub.Clients.All.GetRooms(roomMemoryStore.GetRooms());
 
-                return Ok();
+                RoomViewModel res = mapper.Map<RoomViewModel>(roomDbo);
+
+                return Ok(res);
             }
             catch (Exception ex)
             {
@@ -117,19 +123,19 @@ namespace ChatTogether.Controllerss
 
         [HttpDelete("[action]")]
         [AuthorizeRoles(Role.ADMINISTRATOR)]
-        public async Task<IActionResult> DeleteRoom([FromBody] int roomId)
+        public async Task<IActionResult> DeleteRoom(int id)
         {
             try
             {
-                bool success = roomMemoryStore.DeleteRoom(roomId);
+                bool success = roomMemoryStore.DeleteRoom(id);
 
                 if (!success)
                 {
                     return BadRequest();
                 }
 
-                await roomService.DeleteRoom(roomId);
-
+                await roomService.DeleteRoom(id);
+                await roomHub.Clients.Group(_groupRoom + id).RemoveRoomUsers();
                 await roomHub.Clients.All.GetRooms(roomMemoryStore.GetRooms());
 
                 return Ok();
