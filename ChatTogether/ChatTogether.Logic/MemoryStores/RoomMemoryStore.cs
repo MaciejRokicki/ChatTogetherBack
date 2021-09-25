@@ -82,6 +82,7 @@ namespace ChatTogether.Logic.MemoryStores
         public void CreateRoom(RoomDbo roomDbo)
         {
             RoomHubModel roomHubModel = mapper.Map<RoomHubModel>(roomDbo);
+            roomHubModel.Users = new List<UserHubModel>();
 
             Rooms.Add(roomHubModel);
         }

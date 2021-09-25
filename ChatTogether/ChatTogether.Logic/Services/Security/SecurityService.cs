@@ -307,7 +307,7 @@ namespace ChatTogether.Logic.Services.Security
             await accountRepository.UpdateAsync(accountDbo);
         }
 
-        public async Task BlockAccount(int userId, string reason, DateTime? blockedTo = null)
+        public async Task BlockAccount(int userId, string reason, int blockedById, DateTime? blockedTo = null)
         {
             AccountDbo accountDbo = await accountRepository.GetWithUserAsync(x => x.User.Id == userId);
 
@@ -321,10 +321,13 @@ namespace ChatTogether.Logic.Services.Security
                 await blockedAccountRepository.DeleteAsync(x => x.Id == accountDbo.BlockedAccountId);
             }
 
+
+
             accountDbo.BlockedAccountDbo = new BlockedAccountDbo()
             {
                 Reason = reason,
-                BlockedTo = blockedTo
+                BlockedTo = blockedTo,
+                CreatedById = blockedById
             };
 
             await accountRepository.UpdateAsync(accountDbo);

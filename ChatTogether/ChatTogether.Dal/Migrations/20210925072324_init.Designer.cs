@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatTogether.Dal.Migrations
 {
     [DbContext(typeof(ChatTogetherDbContext))]
-    [Migration("20210917092550_init")]
+    [Migration("20210925072324_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -126,11 +126,16 @@ namespace ChatTogether.Dal.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("int");
+
                     b.Property<string>("Reason")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
 
                     b.ToTable("BlockedAccounts");
                 });
@@ -265,9 +270,21 @@ namespace ChatTogether.Dal.Migrations
                 {
                     b.HasOne("ChatTogether.Dal.Dbos.Security.BlockedAccountDbo", "BlockedAccountDbo")
                         .WithOne("Account")
-                        .HasForeignKey("ChatTogether.Dal.Dbos.Security.AccountDbo", "BlockedAccountId");
+                        .HasForeignKey("ChatTogether.Dal.Dbos.Security.AccountDbo", "BlockedAccountId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("BlockedAccountDbo");
+                });
+
+            modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.BlockedAccountDbo", b =>
+                {
+                    b.HasOne("ChatTogether.Dal.Dbos.Security.AccountDbo", "CreatedBy")
+                        .WithMany("BlockedAccounts")
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
                 });
 
             modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.ChangeEmailTokenDbo", b =>
@@ -321,6 +338,8 @@ namespace ChatTogether.Dal.Migrations
 
             modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.AccountDbo", b =>
                 {
+                    b.Navigation("BlockedAccounts");
+
                     b.Navigation("ChangeEmailTokenDbo");
 
                     b.Navigation("ChangePasswordTokenDbo");

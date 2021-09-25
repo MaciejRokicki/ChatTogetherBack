@@ -8,6 +8,8 @@ namespace ChatTogether.Dal.Dbos.Security
         public string Reason { get; set; }
         public DateTime? BlockedTo { get; set; }
         public DateTime Created { get; set; }
+        public int CreatedById { get; set; }
+        public AccountDbo CreatedBy { get; set; }
 
         public AccountDbo Account { get; set; }
 

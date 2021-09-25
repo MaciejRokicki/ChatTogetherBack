@@ -57,7 +57,9 @@ namespace ChatTogether.Logic.Services
                 "Id",
                 "Nickname",
                 "AccountId",
-                "Account"
+                "Account",
+                "Role",
+                "IsBlocked"
             };
 
             foreach(PropertyInfo prop in typeof(UserDbo).GetProperties())

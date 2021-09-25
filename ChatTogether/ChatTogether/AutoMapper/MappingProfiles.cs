@@ -15,6 +15,10 @@ namespace ChatTogether.AutoMapper
         {
             CreateMap<BlockedAccountDbo, BlockedAccountViewModel>()
                 .ForMember(
+                    dest => dest.UserId,
+                    opt => opt.MapFrom(src => src.Account.User.Id)
+                )
+                .ForMember(
                     dest => dest.Email, 
                     opt => opt.MapFrom(src => src.Account.Email)
                 ).ForMember(
@@ -26,6 +30,12 @@ namespace ChatTogether.AutoMapper
                 ).ForMember(
                     dest => dest.LastName,
                     opt => opt.MapFrom(src => src.Account.User.LastName)
+                ).ForMember(
+                    dest => dest.CreatedByEmail,
+                    opt => opt.MapFrom(src => src.CreatedBy.Email)
+                ).ForMember(
+                    dest => dest.CreatedByNickname,
+                    opt => opt.MapFrom(src => src.CreatedBy.User.Nickname)
                 );
 
             CreateMap<Page<BlockedAccountDbo>, Page<BlockedAccountViewModel>>();
@@ -40,6 +50,9 @@ namespace ChatTogether.AutoMapper
                 .ForMember(
                     dest => dest.Role,
                     opt => opt.MapFrom(src => src.Account.Role)
+                ).ForMember(
+                    dest => dest.IsBlocked,
+                    opt => opt.MapFrom(src => src.Account.BlockedAccountId == null ? false : true)
                 );
             CreateMap<UserViewModel, UserDbo>();
             CreateMap<UserDbo, UserHubModel>();

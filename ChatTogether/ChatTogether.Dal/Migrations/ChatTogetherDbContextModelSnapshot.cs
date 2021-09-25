@@ -124,11 +124,16 @@ namespace ChatTogether.Dal.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("int");
+
                     b.Property<string>("Reason")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
 
                     b.ToTable("BlockedAccounts");
                 });
@@ -269,6 +274,17 @@ namespace ChatTogether.Dal.Migrations
                     b.Navigation("BlockedAccountDbo");
                 });
 
+            modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.BlockedAccountDbo", b =>
+                {
+                    b.HasOne("ChatTogether.Dal.Dbos.Security.AccountDbo", "CreatedBy")
+                        .WithMany("BlockedAccounts")
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
+                });
+
             modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.ChangeEmailTokenDbo", b =>
                 {
                     b.HasOne("ChatTogether.Dal.Dbos.Security.AccountDbo", "Account")
@@ -320,6 +336,8 @@ namespace ChatTogether.Dal.Migrations
 
             modelBuilder.Entity("ChatTogether.Dal.Dbos.Security.AccountDbo", b =>
                 {
+                    b.Navigation("BlockedAccounts");
+
                     b.Navigation("ChangeEmailTokenDbo");
 
                     b.Navigation("ChangePasswordTokenDbo");

@@ -1,5 +1,4 @@
-﻿using ChatTogether.Commons.Role;
-using System;
+﻿using System;
 
 namespace ChatTogether.ViewModels
 {
@@ -12,5 +11,6 @@ namespace ChatTogether.ViewModels
         public DateTime? BirthDate { get; set; }
         public string City { get; set; }
         public string Description { get; set; }
+        public bool IsBlocked { get; set; }
     }
 }

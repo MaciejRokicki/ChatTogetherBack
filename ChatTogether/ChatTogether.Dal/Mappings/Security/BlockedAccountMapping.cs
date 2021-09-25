@@ -23,6 +23,12 @@ namespace ChatTogether.Dal.Mappings.Security
                 .IsRequired();
 
             builder
+                .HasOne(x => x.CreatedBy)
+                .WithMany(x => x.BlockedAccounts)
+                .HasForeignKey(x => x.CreatedById)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder
                 .ToTable("BlockedAccounts");
         }
     }

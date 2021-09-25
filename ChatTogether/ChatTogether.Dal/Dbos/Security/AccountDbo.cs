@@ -1,6 +1,7 @@
 ﻿using ChatTogether.Commons.GenericRepository;
 using ChatTogether.Commons.Role;
 using System;
+using System.Collections.Generic;
 
 namespace ChatTogether.Dal.Dbos.Security
 {
@@ -13,6 +14,7 @@ namespace ChatTogether.Dal.Dbos.Security
         public Role Role { get; set; }
         public int? BlockedAccountId { get; set; }
         public BlockedAccountDbo BlockedAccountDbo { get; set; }
+        public ICollection<BlockedAccountDbo> BlockedAccounts { get; set; }
 
         public UserDbo User { get; set; }
         public ConfirmEmailTokenDbo ConfirmEmailTokenDbo { get; set; }

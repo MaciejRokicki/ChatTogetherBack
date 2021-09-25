@@ -1,7 +1,6 @@
 ﻿using ChatTogether.Hubs.Interfaces;
 using ChatTogether.Logic.Interfaces.MemoryStores;
 using ChatTogether.Ports.HubModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Security.Claims;
@@ -43,16 +42,5 @@ namespace ChatTogether.Hubs
 
             await base.OnDisconnectedAsync(exception);
         }
-
-        //[Authorize]
-        //public async Task Signout(int userId)
-        //{
-        //    UserHubModel userHubModel = userMemoryStore.GetUser(userId);
-
-        //    if (userHubModel != null)
-        //    {
-        //        await Clients.Client(userHubModel.ConnectionId).Signout();
-        //    }
-        //}
     }
 }

@@ -8,21 +8,6 @@ namespace ChatTogether.Dal.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "BlockedAccounts",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BlockedTo = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BlockedAccounts", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Rooms",
                 columns: table => new
                 {
@@ -34,6 +19,22 @@ namespace ChatTogether.Dal.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Rooms", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BlockedAccounts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BlockedTo = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedById = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlockedAccounts", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -57,7 +58,7 @@ namespace ChatTogether.Dal.Migrations
                         column: x => x.BlockedAccountId,
                         principalTable: "BlockedAccounts",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -181,6 +182,11 @@ namespace ChatTogether.Dal.Migrations
                 filter: "[BlockedAccountId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BlockedAccounts_CreatedById",
+                table: "BlockedAccounts",
+                column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ChangeEmailTokens_AccountId",
                 table: "ChangeEmailTokens",
                 column: "AccountId",
@@ -213,10 +219,21 @@ namespace ChatTogether.Dal.Migrations
                 table: "Users",
                 column: "AccountId",
                 unique: true);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_BlockedAccounts_Accounts_CreatedById",
+                table: "BlockedAccounts",
+                column: "CreatedById",
+                principalTable: "Accounts",
+                principalColumn: "Id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Accounts_BlockedAccounts_BlockedAccountId",
+                table: "Accounts");
+
             migrationBuilder.DropTable(
                 name: "ChangeEmailTokens");
 
@@ -236,10 +253,10 @@ namespace ChatTogether.Dal.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Accounts");
+                name: "BlockedAccounts");
 
             migrationBuilder.DropTable(
-                name: "BlockedAccounts");
+                name: "Accounts");
         }
     }
 }

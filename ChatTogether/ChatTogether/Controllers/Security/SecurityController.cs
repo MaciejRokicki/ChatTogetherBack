@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -427,7 +428,10 @@ namespace ChatTogether.Controllers.Security
         {
             try
             {
-                await securityService.BlockAccount(blockAccountViewModel.UserId, blockAccountViewModel.Reason, blockAccountViewModel.BlockedTo);
+                string nickname = httpContextAccessor.HttpContext.User.FindFirstValue("Nickname");
+                UserDbo userDbo = await userService.GetUser(nickname);
+
+                await securityService.BlockAccount(blockAccountViewModel.UserId, blockAccountViewModel.Reason, userDbo.Account.Id, blockAccountViewModel.BlockedTo);
 
                 UserHubModel userHubModel = userMemoryStore.GetUser(blockAccountViewModel.UserId);
 
