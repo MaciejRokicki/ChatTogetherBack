@@ -1,4 +1,6 @@
 ﻿using ChatTogether.Commons.Exceptions;
+using ChatTogether.Commons.Page;
+using ChatTogether.Commons.Role;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.Dal.Interfaces;
 using ChatTogether.Logic.Interfaces.Services;
@@ -10,47 +12,54 @@ namespace ChatTogether.Logic.Services
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository userRepsitory;
+        private readonly IUserRepository userRepository;
 
         public UserService(IUserRepository userRepsitory)
         {
-            this.userRepsitory = userRepsitory;
+            this.userRepository = userRepsitory;
         }
 
         public async Task<UserDbo> ChangeNickname(string email, string nickname)
         {
-            bool isNicknameAvailable = await userRepsitory.IsNicknameAvailable(nickname);
+            bool isNicknameAvailable = await userRepository.IsNicknameAvailable(nickname);
 
             if(!isNicknameAvailable)
             {
                 throw new NicknameExistsException();
             }
 
-            UserDbo userDbo = await userRepsitory.GetWithAccountAsync(x => x.Account.Email == email);
+            UserDbo userDbo = await userRepository.GetWithAccountAsync(x => x.Account.Email == email);
 
             userDbo.Nickname = nickname;
-            userDbo = await userRepsitory.UpdateAsync(userDbo);
+            userDbo = await userRepository.UpdateAsync(userDbo);
 
             return userDbo;
         }
 
         public async Task<UserDbo> GetUser(string nickname)
         {
-            UserDbo userDbo = await userRepsitory.GetWithAccountAsync(x => x.Nickname == nickname);
+            UserDbo userDbo = await userRepository.GetWithAccountAsync(x => x.Nickname == nickname);
 
             return userDbo;
         }
 
+        public async Task<Page<UserDbo>> GetUsers(int page, int pageSize, string search, Role? role)
+        {
+            Page<UserDbo> users = await userRepository.GetPageAsync(page, pageSize, search, role);
+
+            return users;
+        }
+
         public async Task<bool> IsNicknameAvailable(string nickname)
         {
-            bool isNicknameAvailable = await userRepsitory.IsNicknameAvailable(nickname);
+            bool isNicknameAvailable = await userRepository.IsNicknameAvailable(nickname);
 
             return isNicknameAvailable;
         }
 
         public async Task<UserDbo> Update(string email, UserDbo updatedUserDbo)
         {
-            UserDbo userDbo = await userRepsitory.GetWithAccountAsync(x => x.Account.Email == email);
+            UserDbo userDbo = await userRepository.GetWithAccountAsync(x => x.Account.Email == email);
 
             List<string> propBlackList = new List<string>()
             {
@@ -81,7 +90,7 @@ namespace ChatTogether.Logic.Services
                 }
             }
 
-            userDbo = await userRepsitory.UpdateAsync(userDbo);
+            userDbo = await userRepository.UpdateAsync(userDbo);
 
             return userDbo;
         }

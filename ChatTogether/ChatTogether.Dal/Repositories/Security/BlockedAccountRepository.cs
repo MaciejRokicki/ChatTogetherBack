@@ -20,16 +20,15 @@ namespace ChatTogether.Dal.Repositories.Security
             this.chatTogetherDbContext = chatTogetherDbContext;
         }
 
-        public async Task<Page<BlockedAccountDbo>> GetManyAsync(int page, int pageSize, string search)
+        public async Task<Page<BlockedAccountDbo>> GetPageAsync(int page, int pageSize, string search)
         {
-            int count = await chatTogetherDbContext
+            IQueryable<BlockedAccountDbo> query = chatTogetherDbContext
                 .Set<BlockedAccountDbo>()
-                .Where(x => x.Account.Email.Contains(search) || x.Account.User.Nickname.Contains(search))
-                .CountAsync();
+                .Where(x => x.Account.Email.Contains(search) || x.Account.User.Nickname.Contains(search));
 
-            List<BlockedAccountDbo> blockedUsers = await chatTogetherDbContext
-                .Set<BlockedAccountDbo>()
-                .Where(x => x.Account.Email.Contains(search) || x.Account.User.Nickname.Contains(search))
+            int count = await query.CountAsync();
+
+            List<BlockedAccountDbo> blockedUsers = await query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Include(x => x.CreatedBy)

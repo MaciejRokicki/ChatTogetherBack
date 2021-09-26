@@ -1,8 +1,12 @@
 ﻿using ChatTogether.Commons.GenericRepository;
+using ChatTogether.Commons.Page;
+using ChatTogether.Commons.Role;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.Dal.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -36,6 +40,41 @@ namespace ChatTogether.Dal.Repositories
                 .FirstOrDefaultAsync(exp);
 
             return userDbo;
+        }
+
+        public async Task<Page<UserDbo>> GetPageAsync(int page, int pageSize, string search, Role? role)
+        {
+            IQueryable<UserDbo> query = chatTogetherDbContext
+                .Set<UserDbo>();
+                
+            if (role != null)
+            {
+                query = query.Where(x => x.Account.Role == role);
+            }
+
+            query = query.Where(x => x.Nickname.Contains(search) || x.FirstName.Contains(search) || x.LastName.Contains(search));
+
+            int count = await query.CountAsync();
+
+            List<UserDbo> users = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Include(x => x.Account)
+                .OrderBy(x => x.Account.Email)
+                .ToListAsync();
+
+            int pageCount = (int)Math.Ceiling((float)count / pageSize);
+
+            Page<UserDbo> resultPage = new Page<UserDbo>()
+            {
+                CurrentPage = page,
+                PageSize = pageSize,
+                PageCount = pageCount > 0 ? pageCount : 1,
+                Count = count,
+                Data = users
+            };
+
+            return resultPage;
         }
     }
 }

@@ -7,6 +7,6 @@ namespace ChatTogether.Dal.Interfaces.Security
 {
     public interface IBlockedAccountRepository : IRepository<int, BlockedAccountDbo>
     {
-        Task<Page<BlockedAccountDbo>> GetManyAsync(int page, int pageSize, string search);
+        Task<Page<BlockedAccountDbo>> GetPageAsync(int page, int pageSize, string search);
     }
 }

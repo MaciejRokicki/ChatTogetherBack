@@ -307,21 +307,29 @@ namespace ChatTogether.Logic.Services.Security
             await accountRepository.UpdateAsync(accountDbo);
         }
 
-        public async Task BlockAccount(int userId, string reason, int blockedById, DateTime? blockedTo = null)
+        public async Task<bool> BlockAccount(int userId, string reason, int blockedById, DateTime? blockedTo = null)
         {
             AccountDbo accountDbo = await accountRepository.GetWithUserAsync(x => x.User.Id == userId);
 
             if (accountDbo == null)
             {
-                return;
+                return false;
+            }
+
+            if (accountDbo.Role == Role.ADMINISTRATOR || accountDbo.Role == Role.MODERATOR)
+            {
+                AccountDbo blockedBy = await accountRepository.GetWithUserAsync(x => x.Id == blockedById);
+
+                if (blockedBy.Role == Role.MODERATOR)
+                {
+                    return false;
+                }
             }
 
             if (accountDbo.BlockedAccountId != null)
             {
                 await blockedAccountRepository.DeleteAsync(x => x.Id == accountDbo.BlockedAccountId);
             }
-
-
 
             accountDbo.BlockedAccountDbo = new BlockedAccountDbo()
             {
@@ -331,6 +339,8 @@ namespace ChatTogether.Logic.Services.Security
             };
 
             await accountRepository.UpdateAsync(accountDbo);
+
+            return true;
         }
 
         public async Task UnblockAccount(int userId)
@@ -347,7 +357,7 @@ namespace ChatTogether.Logic.Services.Security
 
         public async Task<Page<BlockedAccountDbo>> GetBlockedUsers(int page, int pageSize, string search)
         {
-            Page<BlockedAccountDbo> blockedUsers = await blockedAccountRepository.GetManyAsync(page, pageSize, search);
+            Page<BlockedAccountDbo> blockedUsers = await blockedAccountRepository.GetPageAsync(page, pageSize, search);
 
             return blockedUsers;
         }

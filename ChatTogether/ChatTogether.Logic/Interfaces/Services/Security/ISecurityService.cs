@@ -25,7 +25,7 @@ namespace ChatTogether.Logic.Interfaces.Services.Security
 
         Task ChangeRole(int userId, Role role);
 
-        Task BlockAccount(int userId, string reason, int blockedById, DateTime? blockedTo = null);
+        Task<bool> BlockAccount(int userId, string reason, int blockedById, DateTime? blockedTo = null);
         Task UnblockAccount(int userId);
         Task<Page<BlockedAccountDbo>> GetBlockedUsers(int page, int pageSize, string search);
     }

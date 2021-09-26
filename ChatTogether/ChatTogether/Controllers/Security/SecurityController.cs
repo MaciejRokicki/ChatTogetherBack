@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ChatTogether.Commons.Exceptions;
+using ChatTogether.Commons.HubInvokeResults;
 using ChatTogether.Commons.Page;
 using ChatTogether.Commons.Role;
 using ChatTogether.Dal.Dbos;
@@ -396,6 +397,13 @@ namespace ChatTogether.Controllers.Security
             {
                 await securityService.ChangeRole(changeRoleViewModel.UserId, changeRoleViewModel.Role);
 
+                UserHubModel userHubModel = userMemoryStore.GetUser(changeRoleViewModel.UserId);
+
+                if (userHubModel != null)
+                {
+                    await informationHub.Clients.Client(userHubModel.ConnectionId).Signout(SignoutInvokeResults.ROLE_CHANGED);
+                }
+
                 return Ok();
             }
             catch (Exception ex)
@@ -431,13 +439,16 @@ namespace ChatTogether.Controllers.Security
                 string nickname = httpContextAccessor.HttpContext.User.FindFirstValue("Nickname");
                 UserDbo userDbo = await userService.GetUser(nickname);
 
-                await securityService.BlockAccount(blockAccountViewModel.UserId, blockAccountViewModel.Reason, userDbo.Account.Id, blockAccountViewModel.BlockedTo);
+                bool logout = await securityService.BlockAccount(blockAccountViewModel.UserId, blockAccountViewModel.Reason, userDbo.Account.Id, blockAccountViewModel.BlockedTo);
 
-                UserHubModel userHubModel = userMemoryStore.GetUser(blockAccountViewModel.UserId);
-
-                if (userHubModel != null)
+                if (logout)
                 {
-                    await informationHub.Clients.Client(userHubModel.ConnectionId).Signout();
+                    UserHubModel userHubModel = userMemoryStore.GetUser(blockAccountViewModel.UserId);
+
+                    if (userHubModel != null)
+                    {
+                        await informationHub.Clients.Client(userHubModel.ConnectionId).Signout(SignoutInvokeResults.ACCOUNT_BLOCKED);
+                    }
                 }
 
                 return Ok();

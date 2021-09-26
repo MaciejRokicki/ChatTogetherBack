@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using ChatTogether.Commons.Exceptions;
+using ChatTogether.Commons.Page;
+using ChatTogether.Commons.Role;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.FluentValidator.Validators;
 using ChatTogether.Logic.Interfaces.Services;
@@ -51,6 +53,27 @@ namespace ChatTogether.Controllerss
                 UserDbo userDbo = await userService.GetUser(nickname);
                 UserViewModel userViewModel = mapper.Map<UserViewModel>(userDbo);
                 return Ok(userViewModel);
+            }
+            catch (InvalidDataException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("[action]")]
+        [Authorize]
+        public async Task<IActionResult> GetUsers(int page = 1, string search = "", Role? role = null)
+        {
+            try
+            {
+                Page<UserDbo> pageDbo = await userService.GetUsers(page, 10, search, role);
+                Page<UserViewModel> pageViewModel = mapper.Map<Page<UserViewModel>>(pageDbo);
+
+                return Ok(pageViewModel);
             }
             catch (InvalidDataException ex)
             {

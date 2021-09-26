@@ -48,12 +48,16 @@ namespace ChatTogether.AutoMapper
 
             CreateMap<UserDbo, UserViewModel>()
                 .ForMember(
+                    dest => dest.UserId,
+                    opt => opt.MapFrom(src => src.Id)
+                ).ForMember(
                     dest => dest.Role,
                     opt => opt.MapFrom(src => src.Account.Role)
                 ).ForMember(
                     dest => dest.IsBlocked,
                     opt => opt.MapFrom(src => src.Account.BlockedAccountId == null ? false : true)
                 );
+            CreateMap<Page<UserDbo>, Page<UserViewModel>>();
             CreateMap<UserViewModel, UserDbo>();
             CreateMap<UserDbo, UserHubModel>();
 
