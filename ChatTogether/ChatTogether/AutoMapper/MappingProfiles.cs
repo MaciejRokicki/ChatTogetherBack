@@ -6,6 +6,7 @@ using ChatTogether.Ports.Dtos.Security;
 using ChatTogether.Ports.HubModels;
 using ChatTogether.ViewModels;
 using ChatTogether.ViewModels.Security;
+using System;
 
 namespace ChatTogether.AutoMapper
 {
@@ -70,11 +71,23 @@ namespace ChatTogether.AutoMapper
                 .ForMember(
                     dest => dest.Nickname,
                     opt => opt.MapFrom(src => src.User.Nickname)
+                ).ForMember(
+                    dest => dest.SendTime,
+                    opt => opt.MapFrom(src => DateTime.SpecifyKind(src.SendTime, DateTimeKind.Utc))
+                ).ForMember(
+                    dest => dest.ReceivedTime,
+                    opt => opt.MapFrom(src => DateTime.SpecifyKind(src.ReceivedTime, DateTimeKind.Utc))
                 );
             CreateMap<MessageDbo, MessageHubModel>()
                 .ForMember(
                     dest => dest.Nickname,
                     opt => opt.MapFrom(src => src.User.Nickname)
+                ).ForMember(
+                    dest => dest.SendTime,
+                    opt => opt.MapFrom(src => DateTime.SpecifyKind(src.SendTime, DateTimeKind.Utc))
+                ).ForMember(
+                    dest => dest.ReceivedTime,
+                    opt => opt.MapFrom(src => DateTime.SpecifyKind(src.ReceivedTime, DateTimeKind.Utc))
                 );
             CreateMap<MessageHubModel, MessageDbo>();
         }

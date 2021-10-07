@@ -36,8 +36,11 @@ namespace ChatTogether.Controllers
                     lastMessageDate = DateTime.UtcNow;
                 }
 
+                lastMessageDate = lastMessageDate.Value.ToUniversalTime();
+
                 IEnumerable<MessageDbo> paginationPageDbo = await messageService.GetMessagesAsync(roomId, size, lastMessageDate.Value);
                 IEnumerable<MessageViewModel> paginationPageViewModel = mapper.Map<IEnumerable<MessageViewModel>>(paginationPageDbo);
+
                 return Ok(paginationPageViewModel);
             }
             catch (Exception ex)

@@ -31,7 +31,7 @@ namespace ChatTogether.IoC
                 {
                     options.ExpireTimeSpan = TimeSpan.FromMinutes(55);
                     options.Cookie.HttpOnly = true;
-                    options.Cookie.SameSite = SameSiteMode.None;
+                    options.Cookie.SameSite = SameSiteMode.Lax;
                     options.Events.OnRedirectToLogin = ctxt =>
                     {
                         ctxt.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -57,7 +57,7 @@ namespace ChatTogether.IoC
                 options.AddPolicy("CORS",
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:4200")
+                        builder.WithOrigins("https://localhost:4200")
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();

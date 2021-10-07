@@ -104,18 +104,18 @@ namespace ChatTogether.Logic.Services.Security
 
         public async Task ConfirmEmail(string email, string token)
         {
-            AccountDbo accountDbo = await accountRepository.GetAsync(x => x.Email == email);
+            ConfirmEmailTokenDbo confirmationToken = await confirmEmailTokenRepository.GetWithAccountAsync(x => x.Token == token && x.Account.Email == email);
 
-            if (accountDbo == null)
+            if (confirmationToken == null)
             {
                 throw new IncorrectDataException();
             }
 
-            accountDbo.IsConfirmed = true;
-            accountDbo.ConfirmEmailTokenDbo = null;
+            confirmationToken.Account.IsConfirmed = true;
+            confirmationToken.Account.ConfirmEmailTokenDbo = null;
 
-            await accountRepository.UpdateAsync(accountDbo);
-            await confirmEmailTokenRepository.DeleteAsync(x => x.AccountId == accountDbo.Id);
+            await accountRepository.UpdateAsync(confirmationToken.Account);
+            await confirmEmailTokenRepository.DeleteAsync(x => x.Token == token);
         }
 
         public async Task SendConfirmationEmail(string email, bool isNewAccount = true)
