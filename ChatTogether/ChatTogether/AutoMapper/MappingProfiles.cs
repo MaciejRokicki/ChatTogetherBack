@@ -32,6 +32,12 @@ namespace ChatTogether.AutoMapper
                     dest => dest.LastName,
                     opt => opt.MapFrom(src => src.Account.User.LastName)
                 ).ForMember(
+                    dest => dest.Created,
+                    opt => opt.MapFrom(src => DateTime.SpecifyKind(src.Created, DateTimeKind.Utc))
+                ).ForMember(
+                    dest => dest.BlockedTo,
+                    opt => opt.MapFrom(src => src.BlockedTo.HasValue ? DateTime.SpecifyKind(src.BlockedTo.Value, DateTimeKind.Utc) : src.BlockedTo)
+                ).ForMember(
                     dest => dest.CreatedByEmail,
                     opt => opt.MapFrom(src => src.CreatedBy.Email)
                 ).ForMember(
@@ -54,6 +60,9 @@ namespace ChatTogether.AutoMapper
                 ).ForMember(
                     dest => dest.Role,
                     opt => opt.MapFrom(src => src.Account.Role)
+                ).ForMember(
+                    dest => dest.BirthDate,
+                    opt => opt.MapFrom(src => src.BirthDate.HasValue ? DateTime.SpecifyKind(src.BirthDate.Value, DateTimeKind.Utc) : src.BirthDate)
                 ).ForMember(
                     dest => dest.IsBlocked,
                     opt => opt.MapFrom(src => src.Account.BlockedAccountId == null ? false : true)

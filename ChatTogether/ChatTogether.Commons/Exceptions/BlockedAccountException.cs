@@ -10,8 +10,8 @@ namespace ChatTogether.Commons.Exceptions
             Data.Add("BlockedAccount", new Dictionary<string, object>()
             {
                 { "Reason", reason },
-                { "Blocked", blocked },
-                { "BlockedTo", blockedTo }
+                { "Blocked", DateTime.SpecifyKind(blocked, DateTimeKind.Utc) },
+                { "BlockedTo", blockedTo.HasValue ? DateTime.SpecifyKind(blockedTo.Value, DateTimeKind.Utc) : blockedTo }
             });
         }
     }
