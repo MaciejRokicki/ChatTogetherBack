@@ -60,7 +60,7 @@ namespace ChatTogether.Dal.Repositories
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Include(x => x.Account)
-                .OrderBy(x => x.Account.Email)
+                .OrderBy(x => x.Nickname)
                 .ToListAsync();
 
             int pageCount = (int)Math.Ceiling((float)count / pageSize);
