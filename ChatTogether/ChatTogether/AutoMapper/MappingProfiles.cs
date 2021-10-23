@@ -76,6 +76,15 @@ namespace ChatTogether.AutoMapper
             CreateMap<RoomDbo, RoomHubModel>()
                 .ReverseMap();
 
+            CreateMap<MessageFileViewModel, MessageFileDbo>()
+                .ReverseMap();
+
+            CreateMap<MessageFileViewModel, MessageFileHubModel>()
+                .ReverseMap();
+
+            CreateMap<MessageFileDbo, MessageFileHubModel>()
+                .ReverseMap();
+
             CreateMap<MessageDbo, MessageViewModel>()
                 .ForMember(
                     dest => dest.Nickname,
@@ -86,7 +95,8 @@ namespace ChatTogether.AutoMapper
                 ).ForMember(
                     dest => dest.ReceivedTime,
                     opt => opt.MapFrom(src => DateTime.SpecifyKind(src.ReceivedTime, DateTimeKind.Utc))
-                );
+                )
+                .ReverseMap();
             CreateMap<MessageDbo, MessageHubModel>()
                 .ForMember(
                     dest => dest.Nickname,

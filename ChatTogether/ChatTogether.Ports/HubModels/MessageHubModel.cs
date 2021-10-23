@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ChatTogether.ViewModels;
+using System;
+using System.Collections.Generic;
 
 namespace ChatTogether.Ports.HubModels
 {
@@ -11,5 +13,7 @@ namespace ChatTogether.Ports.HubModels
         public int RoomId { get; set; }
         public DateTime SendTime { get; set; }
         public DateTime ReceivedTime { get; set; }
+
+        public ICollection<MessageFileHubModel> Files { get; set; }
     }
 }

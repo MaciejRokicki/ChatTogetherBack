@@ -1,5 +1,6 @@
 ﻿using ChatTogether.Commons.GenericRepository;
 using System;
+using System.Collections.Generic;
 
 namespace ChatTogether.Dal.Dbos
 {
@@ -12,5 +13,7 @@ namespace ChatTogether.Dal.Dbos
         public RoomDbo Room { get; set; }
         public DateTime SendTime { get; set; }
         public DateTime ReceivedTime { get; set; }
+
+        public ICollection<MessageFileDbo> Files { get; set; }
     }
 }

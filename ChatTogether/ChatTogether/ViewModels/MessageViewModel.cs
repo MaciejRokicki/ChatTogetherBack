@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ChatTogether.ViewModels
 {
@@ -11,5 +12,7 @@ namespace ChatTogether.ViewModels
         public int RoomId { get; set; }
         public DateTime SendTime { get; set; }
         public DateTime ReceivedTime { get; set; }
+
+        public ICollection<MessageFileViewModel> Files { get; set; }
     }
 }

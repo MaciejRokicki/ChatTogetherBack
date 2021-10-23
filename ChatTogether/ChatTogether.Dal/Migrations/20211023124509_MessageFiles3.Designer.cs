@@ -4,14 +4,16 @@ using ChatTogether.Dal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ChatTogether.Dal.Migrations
 {
     [DbContext(typeof(ChatTogetherDbContext))]
-    partial class ChatTogetherDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211023124509_MessageFiles3")]
+    partial class MessageFiles3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,11 +66,11 @@ namespace ChatTogether.Dal.Migrations
                     b.Property<Guid>("MessageId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("SourceName")
+                    b.Property<string>("SourcePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ThumbnailName")
+                    b.Property<string>("ThumbnailPath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")

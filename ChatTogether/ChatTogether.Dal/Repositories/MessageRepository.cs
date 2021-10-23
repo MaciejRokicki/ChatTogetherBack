@@ -24,6 +24,7 @@ namespace ChatTogether.Dal.Repositories
             IEnumerable<MessageDbo> entites = await chatTogetherDbContext
                 .Set<MessageDbo>()
                 .Include(x => x.User)
+                .Include(x => x.Files)
                 .Where(x => x.RoomId == roomId)
                 .Where(x => x.ReceivedTime < lastMessageDate)
                 .OrderByDescending(x => x.ReceivedTime)
