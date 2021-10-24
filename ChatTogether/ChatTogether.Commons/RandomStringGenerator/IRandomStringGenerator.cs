@@ -2,6 +2,6 @@
 {
     public interface IRandomStringGenerator
     {
-        string Generate();
+        string Generate(RandomStringType randomStringType);
     }
 }

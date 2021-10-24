@@ -1,10 +1,14 @@
-﻿using ChatTogether.Commons.RandomStringGenerator;
+﻿using ChatTogether.Commons.ConfigurationModels;
+using ChatTogether.Commons.ImageService;
+using ChatTogether.Commons.RandomStringGenerator;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.Dal.Interfaces;
 using ChatTogether.Logic.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,13 +17,19 @@ namespace ChatTogether.Logic.Services
 {
     public class MessageService : IMessageService
     {
+        private readonly StaticFilesConfiguration staticFilesConfiguration;
+        private readonly IImageService imageService;
         private readonly IMessageRepository messageRepository;
         private readonly IRandomStringGenerator randomStringGenerator;
 
         public MessageService(
+            IOptions<StaticFilesConfiguration> staticFilesConfiguration,
+            IImageService imageService,
             IMessageRepository messageRepository,
             IRandomStringGenerator randomStringGenerator)
         {
+            this.staticFilesConfiguration = staticFilesConfiguration.Value;
+            this.imageService = imageService;
             this.messageRepository = messageRepository;
             this.randomStringGenerator = randomStringGenerator;
         }
@@ -44,8 +54,8 @@ namespace ChatTogether.Logic.Services
             {
                 string fileName = file.FileName;
                 string fileExtension = file.FileName.Split('.').Last();
-                string generatedFileName = randomStringGenerator.Generate();
-                string fullPath = Path.Combine(contentRootPath, "static", $"{generatedFileName}.{fileExtension}");
+                string generatedFileName = randomStringGenerator.Generate(RandomStringType.Path);
+                string fullPath = Path.Combine(contentRootPath, staticFilesConfiguration.Path, $"{generatedFileName}.{fileExtension}");
                 string sourceName = $"{generatedFileName}.{fileExtension}";
 
                 using (FileStream fs = File.Create(fullPath))
@@ -54,13 +64,28 @@ namespace ChatTogether.Logic.Services
                     await fs.FlushAsync();
                 }
 
-                files.Add(new MessageFileDbo()
+                MessageFileDbo messageFileDbo = new MessageFileDbo()
                 {
                     FileName = fileName,
                     SourceName = sourceName,
                     ThumbnailName = String.Empty,
                     Type = file.ContentType
-                });
+                };
+
+                if (file.ContentType.Contains("image/") && file.ContentType != "image/gif")
+                {
+                    Bitmap thumbnail = imageService.CreateThumbnail(file);
+
+                    string thumbnailFileName = randomStringGenerator.Generate(RandomStringType.Path);
+                    string thumbnailFullPath = Path.Combine(contentRootPath, staticFilesConfiguration.Path, $"{thumbnailFileName}.{fileExtension}");
+                    string thumbnailName = $"{thumbnailFileName}.{fileExtension}";
+
+                    thumbnail.Save(thumbnailFullPath);
+
+                    messageFileDbo.ThumbnailName = thumbnailName;
+                }
+
+                files.Add(messageFileDbo);
             }
 
             return files;

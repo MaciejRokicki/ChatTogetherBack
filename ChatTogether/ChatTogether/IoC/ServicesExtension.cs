@@ -80,6 +80,8 @@ namespace ChatTogether.IoC
 
         public static void RegisterConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<StaticFilesConfiguration>(configuration.GetSection("StaticFiles"));
+            services.Configure<ImageConfiguration>(configuration.GetSection("Image"));
             services.Configure<FrontendConfiguration>(configuration.GetSection("Frontend"));
             services.Configure<RandomStringGeneratorConfiguration>(configuration.GetSection("RandomStringGenerator"));
             services.Configure<EmailConfiguration>(configuration.GetSection("Email"));

@@ -1,4 +1,5 @@
 ﻿using ChatTogether.Commons.EmailSender;
+using ChatTogether.Commons.ImageService;
 using ChatTogether.Commons.RandomStringGenerator;
 using ChatTogether.Dal.Interfaces;
 using ChatTogether.Dal.Interfaces.Security;
@@ -45,6 +46,7 @@ namespace ChatTogether.IoC
         {
             container.Register<IRandomStringGenerator, RandomStringGenerator>();
             container.Register<IEmailSender, EmailSender>();
+            container.Register<IImageService, ImageService>();
         }
 
         public static void RegisterValidators(this Container container)

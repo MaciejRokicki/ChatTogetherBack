@@ -137,7 +137,7 @@ namespace ChatTogether.Logic.Services.Security
             confirmEmailTokenDbo = new ConfirmEmailTokenDbo()
             {
                 AccountId = accountDbo.Id,
-                Token = randomStringGenerator.Generate()
+                Token = randomStringGenerator.Generate(RandomStringType.Token)
             };
 
             confirmEmailTokenDbo = await confirmEmailTokenRepository.CreateAsync(confirmEmailTokenDbo);
@@ -173,7 +173,7 @@ namespace ChatTogether.Logic.Services.Security
             changeEmailTokenDbo = new ChangeEmailTokenDbo()
             {
                 AccountId = accountDbo.Id,
-                Token = randomStringGenerator.Generate()
+                Token = randomStringGenerator.Generate(RandomStringType.Token)
             };
 
             changeEmailTokenDbo = await changeEmailTokenRepository.CreateAsync(changeEmailTokenDbo);
@@ -201,7 +201,7 @@ namespace ChatTogether.Logic.Services.Security
             changePasswordTokenDbo = new ChangePasswordTokenDbo()
             {
                 AccountId = accountDbo.Id,
-                Token = randomStringGenerator.Generate()
+                Token = randomStringGenerator.Generate(RandomStringType.Token)
             };
 
             changePasswordTokenDbo = await changePasswordTokenRepository.CreateAsync(changePasswordTokenDbo);
