@@ -2,6 +2,8 @@ using ChatTogether.Hubs;
 using ChatTogether.IoC;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -40,6 +42,11 @@ namespace ChatTogether
             services.RegisterConfiguration(configuration);
 
             services.AddControllers();
+
+            services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = configuration.GetValue<long>("StaticFiles:MaxFileSize");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,10 +75,22 @@ namespace ChatTogether
                 endpoints.MapHub<RoomHub>("/roomHub");
             });
 
+            string staticFilesPath = configuration.GetValue<string>("StaticFiles:Path");
+
+            if (!Directory.Exists(staticFilesPath))
+            {
+                Directory.CreateDirectory(staticFilesPath);
+            }
+
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "static")),
-                RequestPath = "/static"
+                FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, staticFilesPath)),
+                RequestPath = $"/{staticFilesPath}",
+                OnPrepareResponse = ctx => {
+                    ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", "https://localhost:4200");
+                    ctx.Context.Response.Headers.Append("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+                    ctx.Context.Response.Headers.Append("Access-Control-Allow-Credentials", "true");
+                },
             });
         }
     }

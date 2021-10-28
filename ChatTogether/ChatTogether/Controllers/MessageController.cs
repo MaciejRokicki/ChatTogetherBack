@@ -1,20 +1,16 @@
 ﻿using AutoMapper;
 using ChatTogether.Dal.Dbos;
-using ChatTogether.Hubs;
-using ChatTogether.Hubs.Interfaces;
+using ChatTogether.FluentValidator.Validators;
 using ChatTogether.Logic.Interfaces.Services;
 using ChatTogether.ViewModels;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ChatTogether.Controllers
@@ -26,15 +22,18 @@ namespace ChatTogether.Controllers
         private readonly IMapper mapper;
         private readonly IMessageService messageService;
         private readonly IWebHostEnvironment env;
+        private readonly FileToUploadModelValidator fileToUploadModelValidator;
 
         public MessageController(
             IMapper mapper,
             IMessageService messageService,
-            IWebHostEnvironment env)
+            IWebHostEnvironment env,
+            FileToUploadModelValidator fileToUploadModelValidator)
         {
             this.mapper = mapper;
             this.messageService = messageService;
             this.env = env;
+            this.fileToUploadModelValidator = fileToUploadModelValidator;
         }
 
         [HttpGet("[action]")]
@@ -67,6 +66,16 @@ namespace ChatTogether.Controllers
         {
             try
             {
+                foreach(IFormFile file in formCollection.Files)
+                {
+                    ValidationResult validationResult = await fileToUploadModelValidator.ValidateAsync(file);
+
+                    if (!validationResult.IsValid)
+                    {
+                        throw new InvalidDataException(validationResult.ToString());
+                    }
+                }
+
                 List<MessageFileDbo> filesDbo = await messageService.UploadMessageFiles(formCollection, env.ContentRootPath);
 
                 List<MessageFileViewModel> files = mapper.Map<List<MessageFileViewModel>>(filesDbo);

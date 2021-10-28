@@ -55,6 +55,7 @@ namespace ChatTogether.IoC
             container.Register<LoginModelValidator>();
 
             container.Register<UserModelValidator>();
+            container.Register<FileToUploadModelValidator>();
         }
 
         public static void RegisterMemoryStores(this Container container)
