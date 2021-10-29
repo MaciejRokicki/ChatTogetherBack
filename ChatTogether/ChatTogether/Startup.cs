@@ -45,7 +45,7 @@ namespace ChatTogether
 
             services.Configure<FormOptions>(options =>
             {
-                options.MultipartBodyLengthLimit = configuration.GetValue<long>("StaticFiles:MaxFileSize");
+                options.MultipartBodyLengthLimit = configuration.GetValue<long>("StaticFiles:MaxFilesSize");
             });
         }
 
