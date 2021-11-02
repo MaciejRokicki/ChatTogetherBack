@@ -3,6 +3,10 @@ using ChatTogether.Dal.Dbos.Security;
 using ChatTogether.Dal.Mappings;
 using ChatTogether.Dal.Mappings.Security;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ChatTogether.Dal
 {
@@ -33,6 +37,32 @@ namespace ChatTogether.Dal
             modelBuilder.ApplyConfiguration(new RoomMapping());
             modelBuilder.ApplyConfiguration(new MessageMapping());
             modelBuilder.ApplyConfiguration(new MessageFileMapping());
+        }
+
+        public override int SaveChanges()
+        {
+            SoftDeleteSaveChanges();
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        {
+            SoftDeleteSaveChanges();
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+
+        private void SoftDeleteSaveChanges()
+        {
+            foreach(EntityEntry entry in ChangeTracker.Entries())
+            {
+                bool isSoftDelete = entry.CurrentValues.Properties.Any(x => x.Name == "IsDeleted");
+
+                if (entry.State == EntityState.Deleted && isSoftDelete)
+                {
+                    entry.State = EntityState.Modified;
+                    entry.CurrentValues["IsDeleted"] = true;
+                }
+            }
         }
     }
 }

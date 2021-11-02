@@ -1,3 +1,4 @@
+using ChatTogether.Commons.ConfigurationModels;
 using ChatTogether.Hubs;
 using ChatTogether.IoC;
 using Microsoft.AspNetCore.Builder;
@@ -32,7 +33,7 @@ namespace ChatTogether
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.RegisterMvcAndCors();
+            services.RegisterMvcAndCors(configuration);
             services.RegisterAuthentication();
             services.RegisterSignalR();
             services.RegisterAutomapper();
@@ -76,6 +77,7 @@ namespace ChatTogether
             });
 
             string staticFilesPath = configuration.GetValue<string>("StaticFiles:Path");
+            string frontendUrl = configuration.GetValue<string>("Frontend:URL");
 
             if (!Directory.Exists(staticFilesPath))
             {
@@ -87,7 +89,7 @@ namespace ChatTogether
                 FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, staticFilesPath)),
                 RequestPath = $"/{staticFilesPath}",
                 OnPrepareResponse = ctx => {
-                    ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", "https://localhost:4200");
+                    ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", frontendUrl);
                     ctx.Context.Response.Headers.Append("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
                     ctx.Context.Response.Headers.Append("Access-Control-Allow-Credentials", "true");
                 },

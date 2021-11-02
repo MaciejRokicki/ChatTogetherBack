@@ -51,14 +51,14 @@ namespace ChatTogether.IoC
             });
         }
 
-        public static void RegisterMvcAndCors(this IServiceCollection services)
+        public static void RegisterMvcAndCors(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddCors(options =>
             {
                 options.AddPolicy("CORS",
                     builder =>
                     {
-                        builder.WithOrigins("https://localhost:4200")
+                        builder.WithOrigins(configuration.GetValue<string>("Frontend:URL"))
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();

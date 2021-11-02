@@ -32,6 +32,13 @@ namespace ChatTogether.Dal.Mappings
                 .Property(x => x.ThumbnailName);
 
             builder
+                .Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
+
+            builder
+                .HasQueryFilter(x => !x.IsDeleted);
+
+            builder
                 .ToTable("MessageFiles");
         }
     }

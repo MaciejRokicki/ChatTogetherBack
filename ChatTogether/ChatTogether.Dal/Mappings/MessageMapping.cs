@@ -34,6 +34,13 @@ namespace ChatTogether.Dal.Mappings
                 .HasForeignKey(x => x.RoomId);
 
             builder
+                .Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
+
+            builder
+                .HasQueryFilter(x => !x.IsDeleted); 
+
+            builder
                 .ToTable("Messages");
         }
     }

@@ -1,4 +1,5 @@
 ﻿using ChatTogether.Ports.HubModels;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,5 +10,6 @@ namespace ChatTogether.Hubs.Interfaces
         Task GetRooms(ICollection<RoomHubModel> rooms);
         Task ReceiveMessage(MessageHubModel messageHubModel);
         Task RemoveRoomUsers();
+        Task DeleteMessage(Guid id);
     }
 }

@@ -84,7 +84,6 @@ namespace ChatTogether.Hubs
             int userId = int.Parse(Context.User.FindFirstValue("UserId"));
             string nickname = Context.User.FindFirstValue("Nickname");
 
-            messageHubModel.Id = Guid.NewGuid();
             messageHubModel.UserId = userId;
             messageHubModel.Nickname = nickname;
             messageHubModel.ReceivedTime = DateTime.UtcNow;
@@ -93,6 +92,16 @@ namespace ChatTogether.Hubs
 
             MessageDbo messageDbo = mapper.Map<MessageDbo>(messageHubModel);
             await messageService.Add(messageDbo);
+        }
+
+        public async Task DeleteMessage(int roomId, Guid id)
+        {
+            bool result = await messageService.Delete(id);
+
+            if(result)
+            {
+                await Clients.Group(_groupRoom + roomId).DeleteMessage(id);
+            }
         }
     }
 }

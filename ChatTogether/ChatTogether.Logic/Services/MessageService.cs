@@ -90,5 +90,10 @@ namespace ChatTogether.Logic.Services
 
             return files;
         }
+
+        public async Task<bool> Delete(Guid id)
+        {
+            return await messageRepository.DeleteAsync(id);
+        }
     }
 }

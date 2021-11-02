@@ -144,12 +144,12 @@ namespace ChatTogether.Logic.Services.Security
 
             if (isNewAccount)
             {
-                string url = string.Format("{0}#/security/email/confirm/{1}/{2}", frontendConfiguration.URL, email, confirmEmailTokenDbo.Token);
+                string url = string.Format("{0}/#/security/email/confirm/{1}/{2}", frontendConfiguration.URL, email, confirmEmailTokenDbo.Token);
                 await emailSender.Send(email, new ConfirmRegistrationTemplate(email, url));
             }
             else
             {
-                string url = string.Format("{0}#/security/email/confirm/{1}/{2}", frontendConfiguration.URL, email, confirmEmailTokenDbo.Token);
+                string url = string.Format("{0}/#/security/email/confirm/{1}/{2}", frontendConfiguration.URL, email, confirmEmailTokenDbo.Token);
                 await emailSender.Send(email, new ConfirmChangeEmailTemplate(email, url));
             }
         }
@@ -178,7 +178,7 @@ namespace ChatTogether.Logic.Services.Security
 
             changeEmailTokenDbo = await changeEmailTokenRepository.CreateAsync(changeEmailTokenDbo);
 
-            string url = string.Format("{0}#/security/email/change/{1}/{2}", frontendConfiguration.URL, email, changeEmailTokenDbo.Token);
+            string url = string.Format("{0}/#/security/email/change/{1}/{2}", frontendConfiguration.URL, email, changeEmailTokenDbo.Token);
             await emailSender.Send(email, new ChangeEmailRequestTemplate(email, url));
         }
 
@@ -206,7 +206,7 @@ namespace ChatTogether.Logic.Services.Security
 
             changePasswordTokenDbo = await changePasswordTokenRepository.CreateAsync(changePasswordTokenDbo);
 
-            string url = string.Format("{0}#/security/password/change/{1}/{2}", frontendConfiguration.URL, email, changePasswordTokenDbo.Token);
+            string url = string.Format("{0}/#/security/password/change/{1}/{2}", frontendConfiguration.URL, email, changePasswordTokenDbo.Token);
             await emailSender.Send(email, new ChangePasswordRequestTemplate(email, url));
         }
 

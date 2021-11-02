@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace ChatTogether.Dal.Repositories
@@ -17,6 +18,17 @@ namespace ChatTogether.Dal.Repositories
         public MessageRepository(ChatTogetherDbContext chatTogetherDbContext) : base(chatTogetherDbContext)
         {
             this.chatTogetherDbContext = chatTogetherDbContext;
+        }
+
+        public override async Task<MessageDbo> GetAsync(Expression<Func<MessageDbo, bool>> exp)
+        {
+            MessageDbo messageDbo = await chatTogetherDbContext
+                .Set<MessageDbo>()
+                .Include(x => x.Files)
+                //.AsNoTracking()
+                .FirstOrDefaultAsync(exp);
+
+            return messageDbo;
         }
 
         public async Task<IEnumerable<MessageDbo>> GetMessagesAsync(int roomId, int size, DateTime lastMessageDate)
@@ -34,6 +46,31 @@ namespace ChatTogether.Dal.Repositories
                 .ToListAsync();
 
             return entites;
+        }
+
+        public async Task<bool> DeleteAsync(Guid id)
+        {
+            MessageDbo messageDbo = await GetAsync(x => x.Id == id);
+
+            if(messageDbo == null)
+            {
+                return false;
+            }
+
+            chatTogetherDbContext
+                .Set<MessageDbo>()
+                .Remove(messageDbo);
+
+            foreach (MessageFileDbo messageFileDbo in messageDbo.Files)
+            {
+                chatTogetherDbContext
+                    .Set<MessageFileDbo>()
+                    .Remove(messageFileDbo);
+            }
+
+            await chatTogetherDbContext.SaveChangesAsync();
+
+            return true;
         }
     }
 }

@@ -13,6 +13,7 @@ namespace ChatTogether.Dal.Dbos
         public RoomDbo Room { get; set; }
         public DateTime SendTime { get; set; }
         public DateTime ReceivedTime { get; set; }
+        public bool IsDeleted { get; set; }
 
         public ICollection<MessageFileDbo> Files { get; set; }
     }

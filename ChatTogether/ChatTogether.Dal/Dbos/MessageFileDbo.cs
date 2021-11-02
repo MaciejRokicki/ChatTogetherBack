@@ -11,5 +11,6 @@ namespace ChatTogether.Dal.Dbos
         public string Type { get; set; }
         public string SourceName { get; set; }
         public string ThumbnailName { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
