@@ -59,7 +59,6 @@ namespace ChatTogether.Commons.GenericRepository
             return entites;
         }
 
-        //TODO: sprawdzic pozniej na danych (np. jak beda wiadomosci w bazie)
         public virtual async Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> exp)
         {
             IEnumerable<T> entites = await ctxt

@@ -369,26 +369,6 @@ namespace ChatTogether.Controllers.Security
             }
         }
 
-        //TODO: pomyslec nad refreshem (moze refresh token)
-        [HttpGet("[action]")]
-        [Authorize]
-        public async Task<IActionResult> Refresh()
-        {
-            try
-            {
-                IIdentity identity = httpContextAccessor.HttpContext.User.Identity;
-                ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
-
-                await httpContextAccessor.HttpContext.SignInAsync(claimsPrincipal);
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         [HttpPost("[action]")]
         [AuthorizeRoles(Role.ADMINISTRATOR)]
         public async Task<IActionResult> ChangeRole([FromBody] ChangeRoleModel changeRoleViewModel)
