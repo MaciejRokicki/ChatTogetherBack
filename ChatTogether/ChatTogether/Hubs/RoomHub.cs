@@ -88,7 +88,7 @@ namespace ChatTogether.Hubs
             messageHubModel.Nickname = nickname;
             messageHubModel.ReceivedTime = DateTime.UtcNow;
 
-            await Clients.GroupExcept(_groupRoom + messageHubModel.RoomId, Context.ConnectionId).ReceiveMessage(messageHubModel);
+            await Clients.Group(_groupRoom + messageHubModel.RoomId).ReceiveMessage(messageHubModel);
 
             MessageDbo messageDbo = mapper.Map<MessageDbo>(messageHubModel);
             await messageService.Add(messageDbo);
