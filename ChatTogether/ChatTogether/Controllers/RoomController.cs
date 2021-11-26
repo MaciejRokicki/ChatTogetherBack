@@ -45,7 +45,7 @@ namespace ChatTogether.Controllerss
         {
             try
             {
-                RoomDbo roomDbo = await roomService.GetRoom(id);
+                RoomDbo roomDbo = await roomService.GetRoomAsync(id);
                 RoomViewModel roomViewModel = mapper.Map<RoomViewModel>(roomDbo);
                 return Ok(roomViewModel);
             }
@@ -61,7 +61,7 @@ namespace ChatTogether.Controllerss
         {
             try
             {
-                IEnumerable<RoomDbo> paginationPageDbo = await roomService.GetRooms();
+                IEnumerable<RoomDbo> paginationPageDbo = await roomService.GetRoomsAsync();
                 IEnumerable<RoomViewModel> paginationPageViewModel = mapper.Map<IEnumerable<RoomViewModel>>(paginationPageDbo);
                 return Ok(paginationPageViewModel);
             }
@@ -78,7 +78,7 @@ namespace ChatTogether.Controllerss
             try
             {
                 RoomDbo roomDbo = mapper.Map<RoomDbo>(roomViewModel);
-                await roomService.CreateRoom(roomDbo);
+                await roomService.CreateRoomAsync(roomDbo);
                 roomMemoryStore.CreateRoom(roomDbo);
 
                 await roomHub.Clients.All.GetRooms(roomMemoryStore.GetRooms());
@@ -107,7 +107,7 @@ namespace ChatTogether.Controllerss
                     return BadRequest();
                 }
 
-                await roomService.UpdateRoom(roomDbo);
+                await roomService.UpdateRoomAsync(roomDbo);
                 await roomHub.Clients.Group(_groupRoom + roomHubModel.Id).RemoveRoomUsers();
                 await roomHub.Clients.All.GetRooms(roomMemoryStore.GetRooms());
 
@@ -134,7 +134,7 @@ namespace ChatTogether.Controllerss
                     return BadRequest();
                 }
 
-                await roomService.DeleteRoom(id);
+                await roomService.DeleteRoomAsync(id);
                 await roomHub.Clients.Group(_groupRoom + id).RemoveRoomUsers();
                 await roomHub.Clients.All.GetRooms(roomMemoryStore.GetRooms());
 

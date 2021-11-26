@@ -19,7 +19,7 @@ namespace ChatTogether.Logic.Services
             this.userRepository = userRepsitory;
         }
 
-        public async Task<UserDbo> ChangeNickname(string email, string nickname)
+        public async Task<UserDbo> ChangeNicknameAsync(string email, string nickname)
         {
             bool isNicknameAvailable = await userRepository.IsNicknameAvailable(nickname);
 
@@ -36,28 +36,28 @@ namespace ChatTogether.Logic.Services
             return userDbo;
         }
 
-        public async Task<UserDbo> GetUser(string nickname)
+        public async Task<UserDbo> GetUserAsync(string nickname)
         {
             UserDbo userDbo = await userRepository.GetWithAccountAsync(x => x.Nickname == nickname);
 
             return userDbo;
         }
 
-        public async Task<Page<UserDbo>> GetUsers(int page, int pageSize, string search, Role? role)
+        public async Task<Page<UserDbo>> GetUsersAsync(int page, int pageSize, string search, Role? role)
         {
             Page<UserDbo> users = await userRepository.GetPageAsync(page, pageSize, search, role);
 
             return users;
         }
 
-        public async Task<bool> IsNicknameAvailable(string nickname)
+        public async Task<bool> IsNicknameAvailableAsync(string nickname)
         {
             bool isNicknameAvailable = await userRepository.IsNicknameAvailable(nickname);
 
             return isNicknameAvailable;
         }
 
-        public async Task<UserDbo> Update(string email, UserDbo updatedUserDbo)
+        public async Task<UserDbo> UpdateAsync(string email, UserDbo updatedUserDbo)
         {
             UserDbo userDbo = await userRepository.GetWithAccountAsync(x => x.Account.Email == email);
 

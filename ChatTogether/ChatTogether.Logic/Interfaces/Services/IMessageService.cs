@@ -8,9 +8,9 @@ namespace ChatTogether.Logic.Interfaces.Services
 {
     public interface IMessageService
     {
-        Task Add(MessageDbo messageDbo);
+        void Create(MessageDbo messageDbo);
         Task<IEnumerable<MessageDbo>> GetMessagesAsync(int roomId, int size, DateTime lastMessageDate);
-        Task<List<MessageFileDbo>> UploadMessageFiles(IFormCollection formCollection, string contentRootPath);
-        Task<bool> Delete(Guid id);
+        Task<List<MessageFileDbo>> UploadMessageFilesAsync(IFormCollection formCollection, string contentRootPath);
+        Task DeleteAsync(Guid id);
     }
 }

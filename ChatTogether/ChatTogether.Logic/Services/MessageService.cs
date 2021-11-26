@@ -3,6 +3,7 @@ using ChatTogether.Commons.ImageService;
 using ChatTogether.Commons.RandomStringGenerator;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.Dal.Interfaces;
+using ChatTogether.Logic.Interfaces.MemoryStores;
 using ChatTogether.Logic.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -21,22 +22,31 @@ namespace ChatTogether.Logic.Services
         private readonly IImageService imageService;
         private readonly IMessageRepository messageRepository;
         private readonly IRandomStringGenerator randomStringGenerator;
+        private readonly IMessageMemoryStore messageMemoryStore;
 
         public MessageService(
             IOptions<StaticFilesConfiguration> staticFilesConfiguration,
             IImageService imageService,
             IMessageRepository messageRepository,
-            IRandomStringGenerator randomStringGenerator)
+            IRandomStringGenerator randomStringGenerator,
+            IMessageMemoryStore messageMemoryStore)
         {
             this.staticFilesConfiguration = staticFilesConfiguration.Value;
             this.imageService = imageService;
             this.messageRepository = messageRepository;
             this.randomStringGenerator = randomStringGenerator;
+            this.messageMemoryStore = messageMemoryStore;
         }
 
-        public async Task Add(MessageDbo messageDbo)
+        public void Create(MessageDbo messageDbo)
         {
-            await messageRepository.CreateAsync(messageDbo);
+            if (messageMemoryStore.Contains(messageDbo.Id))
+            {
+                messageDbo.IsDeleted = true;
+                messageMemoryStore.DeleteMessageToDelete(messageDbo.Id);
+            }
+
+            messageRepository.Create(messageDbo);
         }
 
         public async Task<IEnumerable<MessageDbo>> GetMessagesAsync(int roomId, int size, DateTime lastMessageDate)
@@ -46,7 +56,7 @@ namespace ChatTogether.Logic.Services
             return messages;
         }
 
-        public async Task<List<MessageFileDbo>> UploadMessageFiles(IFormCollection formCollection, string contentRootPath)
+        public async Task<List<MessageFileDbo>> UploadMessageFilesAsync(IFormCollection formCollection, string contentRootPath)
         {
             List<MessageFileDbo> files = new List<MessageFileDbo>();
 
@@ -91,9 +101,14 @@ namespace ChatTogether.Logic.Services
             return files;
         }
 
-        public async Task<bool> Delete(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            return await messageRepository.DeleteAsync(id);
+            bool result = await messageRepository.DeleteAsync(id);
+
+            if(!result)
+            {
+                messageMemoryStore.AddMessageToDelete(id);
+            }
         }
     }
 }

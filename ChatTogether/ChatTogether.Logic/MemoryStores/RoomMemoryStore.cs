@@ -21,7 +21,7 @@ namespace ChatTogether.Logic.MemoryStores
             mapper = container.GetInstance<IMapper>();
             roomService = container.GetInstance<IRoomService>();
 
-            IEnumerable<RoomDbo> paginationPageDbo = roomService.GetRooms().Result;
+            IEnumerable<RoomDbo> paginationPageDbo = roomService.GetRoomsAsync().Result;
             IEnumerable<RoomHubModel> paginationPageViewModel = mapper.Map<IEnumerable<RoomHubModel>>(paginationPageDbo);
             Rooms = paginationPageViewModel.ToList();
 

@@ -57,7 +57,7 @@ namespace ChatTogether.Logic.Services.Security
             this.randomStringGenerator = randomStringGenerator;
         }
 
-        public async Task ChangeEmail(string token, string newEmail)
+        public async Task ChangeEmailAsync(string token, string newEmail)
         {
             ChangeEmailTokenDbo changeEmailTokenDbo = await changeEmailTokenRepository.GetWithAccountAsync(x => x.Token == token);
 
@@ -80,11 +80,11 @@ namespace ChatTogether.Logic.Services.Security
             accountDbo.ChangeEmailTokenDbo = null;
 
             accountDbo = await accountRepository.UpdateAsync(accountDbo);
-            await SendConfirmationEmail(accountDbo.Email, false);
+            await SendConfirmationEmailAsync(accountDbo.Email, false);
             await changeEmailTokenRepository.DeleteAsync(x => x.Id == changeEmailTokenDbo.Id);
         }
 
-        public async Task ChangePassword(string token, string newPassword)
+        public async Task ChangePasswordAsync(string token, string newPassword)
         {
             ChangePasswordTokenDbo changePasswordTokenDbo = await changePasswordTokenRepository.GetWithAccountAsync(x => x.Token == token);
 
@@ -102,7 +102,7 @@ namespace ChatTogether.Logic.Services.Security
             await changePasswordTokenRepository.DeleteAsync(x => x.Id == changePasswordTokenDbo.Id);
         }
 
-        public async Task ConfirmEmail(string email, string token)
+        public async Task ConfirmEmailAsync(string email, string token)
         {
             ConfirmEmailTokenDbo confirmationToken = await confirmEmailTokenRepository.GetWithAccountAsync(x => x.Token == token && x.Account.Email == email);
 
@@ -118,7 +118,7 @@ namespace ChatTogether.Logic.Services.Security
             await confirmEmailTokenRepository.DeleteAsync(x => x.Token == token);
         }
 
-        public async Task SendConfirmationEmail(string email, bool isNewAccount = true)
+        public async Task SendConfirmationEmailAsync(string email, bool isNewAccount = true)
         {
             AccountDbo accountDbo = await accountRepository.GetAsync(x => x.Email == email);
 
@@ -154,7 +154,7 @@ namespace ChatTogether.Logic.Services.Security
             }
         }
 
-        public async Task ChangeEmailRequest(string email)
+        public async Task ChangeEmailRequestAsync(string email)
         {
             AccountDbo accountDbo = await accountRepository.GetAsync(x => x.Email == email);
 
@@ -182,7 +182,7 @@ namespace ChatTogether.Logic.Services.Security
             await emailSender.Send(email, new ChangeEmailRequestTemplate(email, url));
         }
 
-        public async Task ChangePasswordRequest(string email)
+        public async Task ChangePasswordRequestAsync(string email)
         {
             AccountDbo accountDbo = await accountRepository.GetAsync(x => x.Email == email);
 
@@ -210,7 +210,7 @@ namespace ChatTogether.Logic.Services.Security
             await emailSender.Send(email, new ChangePasswordRequestTemplate(email, url));
         }
 
-        public async Task<(ClaimsPrincipal, UserDbo)> SignIn(AccountDto accountDto)
+        public async Task<(ClaimsPrincipal, UserDbo)> SignInAsync(AccountDto accountDto)
         {
             AccountDbo accountDbo = await accountRepository.GetWithUserAsync(x => x.Email == accountDto.Email);
 
@@ -239,7 +239,7 @@ namespace ChatTogether.Logic.Services.Security
                 }
                 else
                 {
-                    await UnblockAccount(accountDbo.User.Id);
+                    await UnblockAccountAsync(accountDbo.User.Id);
                 }
             }
 
@@ -250,7 +250,7 @@ namespace ChatTogether.Logic.Services.Security
             return (claimsPrincipal, accountDbo.User);
         }
 
-        public async Task SignUp(AccountDto accountDto, string nickname)
+        public async Task SignUpAsync(AccountDto accountDto, string nickname)
         {
             AccountDbo accountDbo = await accountRepository.GetAsync(x => x.Email == accountDto.Email);
 
@@ -259,7 +259,7 @@ namespace ChatTogether.Logic.Services.Security
                 throw new EmailExistsException();
             }
 
-            bool isNicknameAvailable = await userService.IsNicknameAvailable(nickname);
+            bool isNicknameAvailable = await userService.IsNicknameAvailableAsync(nickname);
 
             if(!isNicknameAvailable)
             {
@@ -279,7 +279,7 @@ namespace ChatTogether.Logic.Services.Security
             };
 
             accountDbo = await accountRepository.CreateAsync(accountDbo);
-            await SendConfirmationEmail(accountDbo.Email);
+            await SendConfirmationEmailAsync(accountDbo.Email);
         }
 
         private List<Claim> GetClaims(string email, Role role, string userId, string nickname)
@@ -293,7 +293,7 @@ namespace ChatTogether.Logic.Services.Security
             };
         }
 
-        public async Task ChangeRole(int userId, Role role)
+        public async Task ChangeRoleAsync(int userId, Role role)
         {
             AccountDbo accountDbo = await accountRepository.GetWithUserAsync(x => x.User.Id == userId);
 
@@ -307,7 +307,7 @@ namespace ChatTogether.Logic.Services.Security
             await accountRepository.UpdateAsync(accountDbo);
         }
 
-        public async Task<bool> BlockAccount(int userId, string reason, int blockedById, DateTime? blockedTo = null)
+        public async Task<bool> BlockAccountAsync(int userId, string reason, int blockedById, DateTime? blockedTo = null)
         {
             AccountDbo accountDbo = await accountRepository.GetWithUserAsync(x => x.User.Id == userId);
 
@@ -343,7 +343,7 @@ namespace ChatTogether.Logic.Services.Security
             return true;
         }
 
-        public async Task UnblockAccount(int userId)
+        public async Task UnblockAccountAsync(int userId)
         {
             AccountDbo accountDbo = await accountRepository.GetWithUserAsync(x => x.User.Id == userId);
 
@@ -355,7 +355,7 @@ namespace ChatTogether.Logic.Services.Security
             await blockedAccountRepository.DeleteAsync(x => x.Id == accountDbo.BlockedAccountId);
         }
 
-        public async Task<Page<BlockedAccountDbo>> GetBlockedUsers(int page, int pageSize, string search)
+        public async Task<Page<BlockedAccountDbo>> GetBlockedUsersAsync(int page, int pageSize, string search)
         {
             Page<BlockedAccountDbo> blockedUsers = await blockedAccountRepository.GetPageAsync(page, pageSize, search);
 

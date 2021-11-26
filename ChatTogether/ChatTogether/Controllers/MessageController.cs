@@ -77,7 +77,7 @@ namespace ChatTogether.Controllers
                     }
                 }
 
-                List<MessageFileDbo> filesDbo = await messageService.UploadMessageFiles(formCollection, env.ContentRootPath);
+                List<MessageFileDbo> filesDbo = await messageService.UploadMessageFilesAsync(formCollection, env.ContentRootPath);
 
                 List<MessageFileViewModel> files = mapper.Map<List<MessageFileViewModel>>(filesDbo);
 

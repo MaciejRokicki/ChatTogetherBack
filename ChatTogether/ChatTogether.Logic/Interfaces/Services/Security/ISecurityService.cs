@@ -11,22 +11,22 @@ namespace ChatTogether.Logic.Interfaces.Services.Security
 {
     public interface ISecurityService
     {
-        Task<(ClaimsPrincipal, UserDbo)> SignIn(AccountDto accountDto);
-        Task SignUp(AccountDto accountDto, string nickname);
+        Task<(ClaimsPrincipal, UserDbo)> SignInAsync(AccountDto accountDto);
+        Task SignUpAsync(AccountDto accountDto, string nickname);
 
-        Task SendConfirmationEmail(string email, bool isNewAccount = true);
-        Task ConfirmEmail(string email, string token);
+        Task SendConfirmationEmailAsync(string email, bool isNewAccount = true);
+        Task ConfirmEmailAsync(string email, string token);
 
-        Task ChangeEmailRequest(string email);
-        Task ChangeEmail(string token, string newEmail);
+        Task ChangeEmailRequestAsync(string email);
+        Task ChangeEmailAsync(string token, string newEmail);
 
-        Task ChangePasswordRequest(string email);
-        Task ChangePassword(string token, string newPassword);
+        Task ChangePasswordRequestAsync(string email);
+        Task ChangePasswordAsync(string token, string newPassword);
 
-        Task ChangeRole(int userId, Role role);
+        Task ChangeRoleAsync(int userId, Role role);
 
-        Task<bool> BlockAccount(int userId, string reason, int blockedById, DateTime? blockedTo = null);
-        Task UnblockAccount(int userId);
-        Task<Page<BlockedAccountDbo>> GetBlockedUsers(int page, int pageSize, string search);
+        Task<bool> BlockAccountAsync(int userId, string reason, int blockedById, DateTime? blockedTo = null);
+        Task UnblockAccountAsync(int userId);
+        Task<Page<BlockedAccountDbo>> GetBlockedUsersAsync(int page, int pageSize, string search);
     }
 }

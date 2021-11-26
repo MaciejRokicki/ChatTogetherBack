@@ -20,12 +20,22 @@ namespace ChatTogether.Dal.Repositories
             this.chatTogetherDbContext = chatTogetherDbContext;
         }
 
+        public MessageDbo Create(MessageDbo messageDbo)
+        {
+            chatTogetherDbContext
+                .Set<MessageDbo>()
+                .Add(messageDbo);
+
+            chatTogetherDbContext.SaveChanges();
+
+            return messageDbo;
+        }
+
         public override async Task<MessageDbo> GetAsync(Expression<Func<MessageDbo, bool>> exp)
         {
             MessageDbo messageDbo = await chatTogetherDbContext
                 .Set<MessageDbo>()
                 .Include(x => x.Files)
-                //.AsNoTracking()
                 .FirstOrDefaultAsync(exp);
 
             return messageDbo;

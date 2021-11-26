@@ -91,17 +91,14 @@ namespace ChatTogether.Hubs
             await Clients.Group(_groupRoom + messageHubModel.RoomId).ReceiveMessage(messageHubModel);
 
             MessageDbo messageDbo = mapper.Map<MessageDbo>(messageHubModel);
-            await messageService.Add(messageDbo);
+            messageService.Create(messageDbo);
         }
 
         public async Task DeleteMessage(int roomId, Guid id)
         {
-            bool result = await messageService.Delete(id);
+            await Clients.Group(_groupRoom + roomId).DeleteMessage(id);
 
-            if(result)
-            {
-                await Clients.Group(_groupRoom + roomId).DeleteMessage(id);
-            }
+            await messageService.DeleteAsync(id);
         }
     }
 }

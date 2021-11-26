@@ -76,7 +76,7 @@ namespace ChatTogether.Controllers.Security
                     throw new InvalidDataException();
                 }
 
-                await securityService.ChangeEmail(token, newEmail);
+                await securityService.ChangeEmailAsync(token, newEmail);
                 return Ok();
             }
             catch(IncorrectDataException ex)
@@ -109,7 +109,7 @@ namespace ChatTogether.Controllers.Security
                     throw new InvalidDataException();
                 }
 
-                await securityService.ChangePassword(token, newPassword);
+                await securityService.ChangePasswordAsync(token, newPassword);
 
                 return Ok();
             }
@@ -139,7 +139,7 @@ namespace ChatTogether.Controllers.Security
                     throw new InvalidDataException();
                 }
 
-                await securityService.ChangePasswordRequest(email);
+                await securityService.ChangePasswordRequestAsync(email);
 
                 return Ok();
             }
@@ -162,7 +162,7 @@ namespace ChatTogether.Controllers.Security
         {
             try
             {
-                await securityService.ConfirmEmail(email, token);
+                await securityService.ConfirmEmailAsync(email, token);
 
                 return Ok();
             }
@@ -192,7 +192,7 @@ namespace ChatTogether.Controllers.Security
                     throw new InvalidDataException();
                 }
 
-                await securityService.SendConfirmationEmail(email);
+                await securityService.SendConfirmationEmailAsync(email);
 
                 return Ok();
             }
@@ -217,7 +217,7 @@ namespace ChatTogether.Controllers.Security
             try
             {
                 string email = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
-                await securityService.ChangeEmailRequest(email);
+                await securityService.ChangeEmailRequestAsync(email);
 
                 return Ok();
             }
@@ -238,7 +238,7 @@ namespace ChatTogether.Controllers.Security
             try
             {
                 string email = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
-                await securityService.ChangePasswordRequest(email);
+                await securityService.ChangePasswordRequestAsync(email);
 
                 return Ok();
             }
@@ -265,7 +265,7 @@ namespace ChatTogether.Controllers.Security
                 }
 
                 AccountDto accountDto = mapper.Map<AccountDto>(loginModel);
-                (ClaimsPrincipal claimsPrincipal, UserDbo userDbo) = await securityService.SignIn(accountDto);
+                (ClaimsPrincipal claimsPrincipal, UserDbo userDbo) = await securityService.SignInAsync(accountDto);
 
                 await httpContextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
 
@@ -312,7 +312,7 @@ namespace ChatTogether.Controllers.Security
                 }
 
                 AccountDto accountDto = mapper.Map<AccountDto>(registrationModel);
-                await securityService.SignUp(accountDto, registrationModel.Nickname);
+                await securityService.SignUpAsync(accountDto, registrationModel.Nickname);
 
                 return Ok();
             }
@@ -358,7 +358,7 @@ namespace ChatTogether.Controllers.Security
             {
                 string nickname = httpContextAccessor.HttpContext.User.FindFirstValue("Nickname");
 
-                UserDbo userDbo = await userService.GetUser(nickname);
+                UserDbo userDbo = await userService.GetUserAsync(nickname);
                 UserViewModel userViewModel = mapper.Map<UserViewModel>(userDbo);
 
                 return Ok(userViewModel);
@@ -375,7 +375,7 @@ namespace ChatTogether.Controllers.Security
         {
             try
             {
-                await securityService.ChangeRole(changeRoleViewModel.UserId, changeRoleViewModel.Role);
+                await securityService.ChangeRoleAsync(changeRoleViewModel.UserId, changeRoleViewModel.Role);
 
                 UserHubModel userHubModel = userMemoryStore.GetUser(changeRoleViewModel.UserId);
 
@@ -398,7 +398,7 @@ namespace ChatTogether.Controllers.Security
         {
             try
             {
-                Page<BlockedAccountDbo> blockedUsers = await securityService.GetBlockedUsers(page, 10, search);
+                Page<BlockedAccountDbo> blockedUsers = await securityService.GetBlockedUsersAsync(page, 10, search);
 
                 Page<BlockedAccountViewModel> result = mapper.Map<Page<BlockedAccountViewModel>>(blockedUsers);
 
@@ -417,9 +417,9 @@ namespace ChatTogether.Controllers.Security
             try
             {
                 string nickname = httpContextAccessor.HttpContext.User.FindFirstValue("Nickname");
-                UserDbo userDbo = await userService.GetUser(nickname);
+                UserDbo userDbo = await userService.GetUserAsync(nickname);
 
-                bool logout = await securityService.BlockAccount(blockAccountViewModel.UserId, blockAccountViewModel.Reason, userDbo.Account.Id, blockAccountViewModel.BlockedTo);
+                bool logout = await securityService.BlockAccountAsync(blockAccountViewModel.UserId, blockAccountViewModel.Reason, userDbo.Account.Id, blockAccountViewModel.BlockedTo);
 
                 if (logout)
                 {
@@ -445,7 +445,7 @@ namespace ChatTogether.Controllers.Security
         {
             try
             {
-                await securityService.UnblockAccount(userId);
+                await securityService.UnblockAccountAsync(userId);
 
                 return Ok();
             }

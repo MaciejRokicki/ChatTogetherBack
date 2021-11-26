@@ -6,10 +6,10 @@ namespace ChatTogether.Logic.Interfaces.Services
 {
     public interface IRoomService
     {
-        Task<RoomDbo> GetRoom(int id);
-        Task<IEnumerable<RoomDbo>> GetRooms();
-        Task CreateRoom(RoomDbo roomDbo);
-        Task UpdateRoom(RoomDbo roomDbo);
-        Task DeleteRoom(int id);
+        Task<RoomDbo> GetRoomAsync(int id);
+        Task<IEnumerable<RoomDbo>> GetRoomsAsync();
+        Task CreateRoomAsync(RoomDbo roomDbo);
+        Task UpdateRoomAsync(RoomDbo roomDbo);
+        Task DeleteRoomAsync(int id);
     }
 }

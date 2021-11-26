@@ -50,7 +50,7 @@ namespace ChatTogether.Controllerss
                     throw new InvalidDataException();
                 }
 
-                UserDbo userDbo = await userService.GetUser(nickname);
+                UserDbo userDbo = await userService.GetUserAsync(nickname);
                 UserViewModel userViewModel = mapper.Map<UserViewModel>(userDbo);
                 return Ok(userViewModel);
             }
@@ -70,7 +70,7 @@ namespace ChatTogether.Controllerss
         {
             try
             {
-                Page<UserDbo> pageDbo = await userService.GetUsers(page, 10, search, role);
+                Page<UserDbo> pageDbo = await userService.GetUsersAsync(page, 10, search, role);
                 Page<UserViewModel> pageViewModel = mapper.Map<Page<UserViewModel>>(pageDbo);
 
                 return Ok(pageViewModel);
@@ -102,7 +102,7 @@ namespace ChatTogether.Controllerss
 
                 UserDbo userDbo = mapper.Map<UserDbo>(userViewModel);
 
-                userDbo = await userService.Update(email, userDbo);
+                userDbo = await userService.UpdateAsync(email, userDbo);
                 userViewModel = mapper.Map<UserViewModel>(userDbo);
                 return Ok(userViewModel);
             }
@@ -135,7 +135,7 @@ namespace ChatTogether.Controllerss
 
                 string email = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
 
-                await userService.ChangeNickname(email, nickname);
+                await userService.ChangeNicknameAsync(email, nickname);
                 return Ok();
             }
             catch (InvalidDataException ex)
