@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatTogether.Dal.Migrations
 {
     [DbContext(typeof(ChatTogetherDbContext))]
-    [Migration("20211203091319_init")]
+    [Migration("20211203100258_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -67,11 +67,6 @@ namespace ChatTogether.Dal.Migrations
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
 
                     b.Property<Guid>("MessageId")
                         .HasColumnType("uniqueidentifier");
@@ -313,7 +308,7 @@ namespace ChatTogether.Dal.Migrations
                     b.HasOne("ChatTogether.Dal.Dbos.MessageDbo", "Message")
                         .WithMany("Files")
                         .HasForeignKey("MessageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
                     b.Navigation("Message");

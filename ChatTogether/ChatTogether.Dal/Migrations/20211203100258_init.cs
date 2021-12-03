@@ -185,8 +185,7 @@ namespace ChatTogether.Dal.Migrations
                     FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SourceName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ThumbnailName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                    ThumbnailName = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -195,8 +194,7 @@ namespace ChatTogether.Dal.Migrations
                         name: "FK_MessageFiles_Messages_MessageId",
                         column: x => x.MessageId,
                         principalTable: "Messages",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(

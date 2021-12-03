@@ -71,13 +71,6 @@ namespace ChatTogether.Dal.Repositories
                 .Set<MessageDbo>()
                 .Remove(messageDbo);
 
-            foreach (MessageFileDbo messageFileDbo in messageDbo.Files)
-            {
-                chatTogetherDbContext
-                    .Set<MessageFileDbo>()
-                    .Remove(messageFileDbo);
-            }
-
             await chatTogetherDbContext.SaveChangesAsync();
 
             return true;

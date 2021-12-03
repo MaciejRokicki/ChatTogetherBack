@@ -14,7 +14,8 @@ namespace ChatTogether.Dal.Mappings
             builder
                 .HasOne(x => x.Message)
                 .WithMany(x => x.Files)
-                .HasForeignKey(x => x.MessageId);
+                .HasForeignKey(x => x.MessageId)
+                .OnDelete(DeleteBehavior.ClientNoAction);
 
             builder
                 .Property(x => x.FileName)
@@ -32,11 +33,7 @@ namespace ChatTogether.Dal.Mappings
                 .Property(x => x.ThumbnailName);
 
             builder
-                .Property(x => x.IsDeleted)
-                .HasDefaultValue(false);
-
-            builder
-                .HasQueryFilter(x => !x.IsDeleted);
+                .HasQueryFilter(x => !x.Message.IsDeleted);
 
             builder
                 .ToTable("MessageFiles");

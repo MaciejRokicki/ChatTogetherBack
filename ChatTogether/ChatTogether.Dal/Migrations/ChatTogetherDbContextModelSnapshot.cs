@@ -66,11 +66,6 @@ namespace ChatTogether.Dal.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
                     b.Property<Guid>("MessageId")
                         .HasColumnType("uniqueidentifier");
 
@@ -311,7 +306,7 @@ namespace ChatTogether.Dal.Migrations
                     b.HasOne("ChatTogether.Dal.Dbos.MessageDbo", "Message")
                         .WithMany("Files")
                         .HasForeignKey("MessageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
                     b.Navigation("Message");
