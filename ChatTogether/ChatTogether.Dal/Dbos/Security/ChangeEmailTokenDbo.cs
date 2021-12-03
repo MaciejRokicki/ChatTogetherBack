@@ -1,11 +1,6 @@
-﻿using ChatTogether.Commons.GenericRepository;
-
-namespace ChatTogether.Dal.Dbos.Security
+﻿namespace ChatTogether.Dal.Dbos.Security
 {
-    public class ChangeEmailTokenDbo : DboModel<int>
+    public class ChangeEmailTokenDbo : TokenDbo
     {
-        public int AccountId { get; set; }
-        public AccountDbo Account { get; set; }
-        public string Token { get; set; }
     }
 }

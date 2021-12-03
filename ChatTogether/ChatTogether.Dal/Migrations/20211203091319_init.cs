@@ -155,7 +155,8 @@ namespace ChatTogether.Dal.Migrations
                     UserId = table.Column<int>(type: "int", nullable: false),
                     RoomId = table.Column<int>(type: "int", nullable: false),
                     SendTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ReceivedTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    ReceivedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
@@ -170,6 +171,30 @@ namespace ChatTogether.Dal.Migrations
                         name: "FK_Messages_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MessageFiles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MessageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SourceName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ThumbnailName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MessageFiles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MessageFiles_Messages_MessageId",
+                        column: x => x.MessageId,
+                        principalTable: "Messages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -203,6 +228,11 @@ namespace ChatTogether.Dal.Migrations
                 table: "ConfirmEmailTokens",
                 column: "AccountId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MessageFiles_MessageId",
+                table: "MessageFiles",
+                column: "MessageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_RoomId",
@@ -242,6 +272,9 @@ namespace ChatTogether.Dal.Migrations
 
             migrationBuilder.DropTable(
                 name: "ConfirmEmailTokens");
+
+            migrationBuilder.DropTable(
+                name: "MessageFiles");
 
             migrationBuilder.DropTable(
                 name: "Messages");
