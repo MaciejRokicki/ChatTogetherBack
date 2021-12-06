@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ChatTogether.Commons.Role;
 using ChatTogether.Dal.Dbos;
 using ChatTogether.FluentValidator.Validators;
 using ChatTogether.Logic.Interfaces.Services;
