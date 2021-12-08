@@ -1,4 +1,4 @@
-﻿namespace ChatTogether.Logic.Interfaces.Services.Security
+﻿namespace ChatTogether.Commons.Encryption
 {
     public interface IEncryptionService
     {

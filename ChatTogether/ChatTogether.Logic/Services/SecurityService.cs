@@ -1,6 +1,7 @@
 ﻿using ChatTogether.Commons.ConfigurationModels;
 using ChatTogether.Commons.EmailSender;
 using ChatTogether.Commons.EmailSender.Models.Templates;
+using ChatTogether.Commons.Encryption;
 using ChatTogether.Commons.Exceptions;
 using ChatTogether.Commons.Page;
 using ChatTogether.Commons.RandomStringGenerator;
@@ -9,7 +10,6 @@ using ChatTogether.Dal.Dbos;
 using ChatTogether.Dal.Dbos.Security;
 using ChatTogether.Dal.Interfaces.Security;
 using ChatTogether.Logic.Interfaces.Services;
-using ChatTogether.Logic.Interfaces.Services.Security;
 using ChatTogether.Ports.Dtos.Security;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Options;
@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace ChatTogether.Logic.Services.Security
+namespace ChatTogether.Logic.Services
 {
     public class SecurityService : ISecurityService
     {

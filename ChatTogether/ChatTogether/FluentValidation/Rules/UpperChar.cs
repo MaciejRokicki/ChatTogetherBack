@@ -2,7 +2,7 @@
 using FluentValidation.Validators;
 using System.Linq;
 
-namespace ChatTogether.FluentValidator.Rules
+namespace ChatTogether.FluentValidation.Rules
 {
     public class UpperChar<T, TProperty> : PropertyValidator<T, TProperty>
     {

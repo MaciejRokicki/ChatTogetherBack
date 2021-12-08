@@ -1,9 +1,8 @@
-﻿using ChatTogether.Logic.Interfaces.Services.Security;
-using System;
+﻿using System;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ChatTogether.Logic.Services.Security
+namespace ChatTogether.Commons.Encryption
 {
     public class EncryptionService : IEncryptionService
     {

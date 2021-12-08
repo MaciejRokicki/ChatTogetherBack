@@ -1,10 +1,10 @@
 ﻿using ChatTogether.Commons.ConfigurationModels;
-using ChatTogether.FluentValidator.Rules;
+using ChatTogether.FluentValidation.Rules;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace ChatTogether.FluentValidator.Validators
+namespace ChatTogether.FluentValidation.Validators
 {
     public class FileToUploadModelValidator : AbstractValidator<IFormFile>
     {

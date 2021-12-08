@@ -7,7 +7,7 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace ChatTogether.Logic.Interfaces.Services.Security
+namespace ChatTogether.Logic.Interfaces.Services
 {
     public interface ISecurityService
     {

@@ -3,7 +3,7 @@ using ChatTogether.Commons.Exceptions;
 using ChatTogether.Commons.Page;
 using ChatTogether.Commons.Role;
 using ChatTogether.Dal.Dbos;
-using ChatTogether.FluentValidator.Validators;
+using ChatTogether.FluentValidation.Validators;
 using ChatTogether.Logic.Interfaces.Services;
 using ChatTogether.ViewModels;
 using FluentValidation.Results;

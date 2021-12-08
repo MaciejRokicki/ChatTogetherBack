@@ -1,7 +1,7 @@
 ﻿using ChatTogether.ViewModels;
 using FluentValidation;
 
-namespace ChatTogether.FluentValidator.Validators
+namespace ChatTogether.FluentValidation.Validators
 {
     public class UserModelValidator : AbstractValidator<UserViewModel>
     {

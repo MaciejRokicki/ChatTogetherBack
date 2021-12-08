@@ -1,23 +1,22 @@
 ﻿using ChatTogether.Commons.EmailSender;
+using ChatTogether.Commons.Encryption;
 using ChatTogether.Commons.ImageService;
 using ChatTogether.Commons.RandomStringGenerator;
 using ChatTogether.Dal.Interfaces;
 using ChatTogether.Dal.Interfaces.Security;
 using ChatTogether.Dal.Repositories;
 using ChatTogether.Dal.Repositories.Security;
-using ChatTogether.FluentValidator.Validators;
-using ChatTogether.FluentValidator.Validators.Security;
+using ChatTogether.FluentValidation.Validators;
+using ChatTogether.FluentValidation.Validators.Security;
 using ChatTogether.Logic.Interfaces.MemoryStores;
 using ChatTogether.Logic.Interfaces.Services;
-using ChatTogether.Logic.Interfaces.Services.Security;
 using ChatTogether.Logic.MemoryStores;
 using ChatTogether.Logic.Services;
-using ChatTogether.Logic.Services.Security;
 using SimpleInjector;
 
 namespace ChatTogether.IoC
 {
-    public static class ServicesRegistrations
+    public static class ServiceRegistrations
     {
         public static void RegisterRepositories(this Container container)
         {
@@ -34,7 +33,6 @@ namespace ChatTogether.IoC
 
         public static void RegisterServices(this Container container)
         {
-            container.Register<IEncryptionService, EncryptionService>();
             container.Register<ISecurityService, SecurityService>();
 
             container.Register<IUserService, UserService>();
@@ -44,6 +42,7 @@ namespace ChatTogether.IoC
 
         public static void RegisterCommons(this Container container)
         {
+            container.Register<IEncryptionService, EncryptionService>();
             container.Register<IRandomStringGenerator, RandomStringGenerator>();
             container.Register<IEmailSender, EmailSender>();
             container.Register<IImageService, ImageService>();

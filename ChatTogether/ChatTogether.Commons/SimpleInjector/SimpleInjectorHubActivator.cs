@@ -4,7 +4,6 @@ using SimpleInjector.Lifestyles;
 
 namespace ChatTogether.Commons.SimpleInjector
 {
-    //https://github.com/simpleinjector/SimpleInjector/issues/631
     public sealed class SimpleInjectorHubActivator<T> : IHubActivator<T> where T : Hub
     {
         private readonly Container container;

@@ -1,9 +1,8 @@
 ﻿using FluentValidation;
 using FluentValidation.Validators;
-using Microsoft.AspNetCore.Http;
 using System.Linq;
 
-namespace ChatTogether.FluentValidator.Rules
+namespace ChatTogether.FluentValidation.Rules
 {
     public class FileType<T, TProperty> : PropertyValidator<T, TProperty>
     {
