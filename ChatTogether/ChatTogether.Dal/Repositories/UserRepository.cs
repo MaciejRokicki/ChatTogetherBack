@@ -57,10 +57,10 @@ namespace ChatTogether.Dal.Repositories
             int count = await query.CountAsync();
 
             List<UserDbo> users = await query
+                .OrderBy(x => x.Nickname)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .Include(x => x.Account)
-                .OrderBy(x => x.Nickname)
+                .Include(x => x.Account)          
                 .ToListAsync();
 
             int pageCount = (int)Math.Ceiling((float)count / pageSize);

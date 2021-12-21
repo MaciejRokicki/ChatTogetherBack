@@ -29,6 +29,7 @@ namespace ChatTogether.Dal.Repositories.Security
             int count = await query.CountAsync();
 
             List<BlockedAccountDbo> blockedUsers = await query
+                .OrderBy(x => x.Account.Email)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Include(x => x.CreatedBy)
@@ -60,7 +61,6 @@ namespace ChatTogether.Dal.Repositories.Security
                         }
                     }
                 })
-                .OrderBy(x => x.Account.Email)
                 .ToListAsync();
 
             int pageCount = (int)Math.Ceiling((float)count / pageSize);
