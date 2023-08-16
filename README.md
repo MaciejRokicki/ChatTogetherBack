@@ -1,6 +1,6 @@
 # ChatTogetherBack
 
-### Frontend
+### Frontend (here you can find screenshots)
 https://github.com/MaciejRokicki/ChatTogetherFront
 
 ### Description
